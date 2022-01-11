@@ -389,7 +389,9 @@ void main(){
    * @return {boolean|WebGLShader} compiled shader object or false
    */
   createShader(p, i, j){
+    //console.log('createShader');
     if(!this.gl){return false;}
+    console.log('createShader');
     const k = this.gl.createShader(this.gl.VERTEX_SHADER - i);
     this.gl.shaderSource(k, j);
     this.gl.compileShader(k);
@@ -400,12 +402,15 @@ void main(){
       console.warn(msg);
       if(this.onBuildCallback != null){
         this.onBuildCallback('error', ` ● [ ${t} ] ${msg}`);
+        console.log('error', ` ● [ ${t} ] ${msg}`);
       }
       return false;
     }
     if(this.onBuildCallback != null){
-    this.onBuildCallback('success', ` ● [ ${t} ] shader compile succeeded`);
+      this.onBuildCallback('success', ` ● [ ${t} ] shader compile succeeded`);
+      console.log('success', ` ● [ ${t} ] shader compile succeeded`);
     }
+    console.log('ぬけた');
     this.gl.attachShader(p, k);
     const l = this.gl.getShaderInfoLog(k);
     if(l !== ''){console.info('shader info: ' + l);}
