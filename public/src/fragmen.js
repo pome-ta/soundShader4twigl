@@ -166,7 +166,7 @@ export class Fragmen {
      * @type {Array.<number>}
      */
     this.buffers = null;
-
+    /*
     // self binding
     this.render    = this.render.bind(this);
     this.rect      = this.rect.bind(this);
@@ -174,6 +174,7 @@ export class Fragmen {
     this.draw      = this.draw.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
     this.keyDown   = this.keyDown.bind(this);
+    */
     // initial call
     this.init(option);
   }
@@ -290,6 +291,68 @@ void main(){
     this.gl.disable(this.gl.CULL_FACE);
     this.gl.disable(this.gl.BLEND);
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  }
+  
+  /**
+   * rendering hub
+   * @param {string} source - fragment shader source
+   * @return {object} instance
+   */
+  render(source){
+    if(source === null || source === undefined || source === ''){
+      if(this.FS === ''){return;}
+    }else{
+      this.FS = source;
+    }
+    this.reset();
+    return this;
+  }
+  
+  /**
+   * set rect
+   */
+  rect(){}
+  
+  /**
+   * reset renderer
+   */
+  reset(){}
+  
+  /**
+   * rendering
+   */
+  draw(){}
+  
+  
+  /**
+   * create and compile shader
+   * @param {WebGLProgram} p - target program object
+   * @param {number} i - 0 or 1, 0 is vertex shader compile mode
+   * @param {string} j - shader source
+   * @return {boolean|WebGLShader} compiled shader object or false
+   */
+  createShader(p, i, j){
+    if(!this.gl){return false;}
+    const k = this.gl.createShader(this.gl.VERTEX_SHADER - i);
+    this.gl.shaderSource(k, j);
+    this.gl.compileShader(k);
+    const t = getTimeString();
+    if(!this.gl.getShaderParameter(k, this.gl.COMPILE_STATUS)){
+      let msg = this.gl.getShaderInfoLog(k);
+      msg = this.formatErrorMessage(msg);
+      console.warn(msg);
+      if(this.onBuildCallback != null){
+        this.onBuildCallback('error', ` ● [ ${t} ] ${msg}`);
+      }
+      return false;
+    }
+    if(this.onBuildCallback != null){
+    this.onBuildCallback('success', ` ● [ ${t} ] shader compile succeeded`);
+    }
+    this.gl.attachShader(p, k);
+    const l = this.gl.getShaderInfoLog(k);
+    if(l !== ''){console.info('shader info: ' + l);}
+    return k;
   }
 
 

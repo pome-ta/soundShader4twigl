@@ -1,7 +1,10 @@
+import {Fragmen} from './fragmen.js';
+
 //console.log('start');
 
 (() => {
-let canvas = null; // スクリーン
+let canvas = null;  // スクリーン
+let fragmen = null;  // fragmen.js のインスタンス
 
 // fragmen.js 用のオプションの雛形
 const FRAGMEN_OPTION = {
@@ -25,18 +28,22 @@ window.addEventListener('DOMContentLoaded', () => {
   // 最初に一回リサイズ相当の処理を行っておく
   resize();
   
+  // メインとなる fragmen のインスタンス
   const option = Object.assign(FRAGMEN_OPTION, {
     target: canvas,
     eventTarget: window,
   });
-  
+  /*
   console.log(option);
-
   console.log('main');
   console.log(canvas.width);
   console.log(canvas.height);
+  */
   
+  fragmen = new Fragmen(option);
 }, false);
+
+
 
 /**
  * ウィンドウリサイズ時の処理
@@ -46,12 +53,15 @@ function resize(){
   const bound = canvas.parentElement.getBoundingClientRect();
   canvas.width = bound.width;
   canvas.height = bound.height;
-  
+  /*
   console.log('resize');
   console.log(canvas.width);
   console.log(canvas.height);
+  */
 }
 
-})();
 
+
+})();
 //console.log('end');
+
