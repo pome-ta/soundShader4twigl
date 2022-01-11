@@ -201,7 +201,10 @@ export class Fragmen {
     
     // init webgl context
     const opt = {alpha: false, preserveDrawingBuffer: true};
+    
+    // xxx: `webgl2` で通るので、エラーハンドリング消す(最低😇)
     this.gl = this.canvas.getContext('webgl2', opt);
+    /*
     this.isWebGL2 = this.gl != null;
     if(this.isWebGL2 !== true){
       this.gl = this.canvas.getContext('webgl', opt);
@@ -210,7 +213,7 @@ export class Fragmen {
     if(this.gl == null){
       console.log('webgl unsupported');
       return;
-    }
+    }*/
     
     // check event
     if(option.hasOwnProperty('eventTarget') && option.eventTarget !== null && option.eventTarget !== undefined){
@@ -245,6 +248,8 @@ void main(){
     gl_FragColor = texture2D(texture, vTexCoord);
 }`;
 
+
+    // xxx: ここいるのか？(sound でつかう？)
     this.postProgram = this.gl.createProgram();
     let vs = this.createShader(this.postProgram, 0, this.postVS);
     let fs = this.createShader(this.postProgram, 1, this.postFS);
@@ -254,6 +259,7 @@ void main(){
     this.postUniLocation = {};
     this.postUniLocation.texture = this.gl.getUniformLocation(this.postProgram, 'texture');
     this.postAttLocation = this.gl.getAttribLocation(this.postProgram, 'position');
+
 
     this.post300VS = `#version 300 es
 in  vec3 position;
@@ -272,7 +278,10 @@ void main(){
     outColor = texture(drawTexture, vTexCoord);
 }`;
 
+
+    // xxx: ここ、一元化でええのかな？(sound もつかう？)
     if(this.isWebGL2 === true){
+      console.log('true');
       this.post300Program = this.gl.createProgram();
       vs = this.createShader(this.post300Program, 0, this.post300VS);
       fs = this.createShader(this.post300Program, 1, this.post300FS);

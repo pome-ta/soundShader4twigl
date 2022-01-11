@@ -2,11 +2,21 @@
 
 ## resize
 
+
+サイズ取得(描画) が少し変？
+
+```
 LOG: 398
 LOG: 302
+```
 
-
+```
 398
 226
+```
+
+`DOMContentLoaded` の挙動に違いあり？
+- Pythonista
+- Play.js
 
 
