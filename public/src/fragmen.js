@@ -6,6 +6,18 @@ export class Fragmen {
   // xxx: `switch` 分岐をどうやってハンドリングするか
   static get MODE_CLASSIC(){return 0;}
   
+  static get DEFAULT_SOURCE(){
+    // sources
+    const classic = `precision highp float;
+uniform vec2 resolution;
+uniform vec2 mouse;
+uniform float time;
+uniform sampler2D backbuffer;
+void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(int i=0;i<8;++i){p.xy=abs(p)/abs(dot(p,p))-vec2(.9+cos(time*.2)*.4);}gl_FragColor=vec4(p.xxy,1);}`;
+
+  return classic;
+  }
+  
   /**
    * constructor of fragmen.js
    * @param {object} option - オプション
@@ -166,8 +178,9 @@ export class Fragmen {
      * @type {Array.<number>}
      */
     this.buffers = null;
-    /*
+    
     // self binding
+    /*
     this.render    = this.render.bind(this);
     this.rect      = this.rect.bind(this);
     this.reset     = this.reset.bind(this);
@@ -178,7 +191,6 @@ export class Fragmen {
     // initial call
     this.init(option);
   }
-
 
   /**
    * initialize fragmen.js
@@ -281,7 +293,6 @@ void main(){
 
     // xxx: ここ、一元化でええのかな？(sound もつかう？)
     if(this.isWebGL2 === true){
-      console.log('true');
       this.post300Program = this.gl.createProgram();
       vs = this.createShader(this.post300Program, 0, this.post300VS);
       fs = this.createShader(this.post300Program, 1, this.post300FS);
@@ -320,7 +331,38 @@ void main(){
   /**
    * set rect
    */
-  rect(){}
+  rect(){
+    /*
+    const bound = this.target.getBoundingClientRect();
+    this.width = bound.width;
+    this.height = bound.height;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+    this.resetBuffer(this.fFront);
+    this.resetBuffer(this.fBack);
+    this.resetBuffer(this.fTemp);
+    */
+    // todo: `switch` コメントアウト
+    /*
+    switch(this.mode){
+      case Fragmen.MODE_CLASSIC_MRT:
+      case Fragmen.MODE_GEEK_MRT:
+      case Fragmen.MODE_GEEKER_MRT:
+      case Fragmen.MODE_GEEKEST_MRT:
+        this.fFront = this.createFramebufferMRT(this.width, this.height, Fragmen.MRT_TARGET_COUNT);
+        this.fBack = this.createFramebufferMRT(this.width, this.height, Fragmen.MRT_TARGET_COUNT);
+        break;
+      default:
+        this.fFront = this.createFramebuffer(this.width, this.height);
+        this.fBack = this.createFramebuffer(this.width, this.height);
+    }
+    */
+    /*
+    this.fFront = this.createFramebuffer(this.width, this.height);
+    this.fBack = this.createFramebuffer(this.width, this.height);
+    this.gl.viewport(0, 0, this.width, this.height);
+    */
+  }
   
   /**
    * reset renderer
