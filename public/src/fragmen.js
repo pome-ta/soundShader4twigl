@@ -184,11 +184,10 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
     this.buffers = null;
     
     // self binding
-    
-    this.render    = this.render.bind(this);
+    this.render = this.render.bind(this);
+    this.rect = this.rect.bind(this);
+    this.reset = this.reset.bind(this);
     /*
-    this.rect      = this.rect.bind(this);
-    this.reset     = this.reset.bind(this);
     this.draw      = this.draw.bind(this);
     this.mouseMove = this.mouseMove.bind(this);
     this.keyDown   = this.keyDown.bind(this);
@@ -338,16 +337,16 @@ void main(){
    * set rect
    */
   rect(){
-    /*
     const bound = this.target.getBoundingClientRect();
     this.width = bound.width;
     this.height = bound.height;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
+    
     this.resetBuffer(this.fFront);
     this.resetBuffer(this.fBack);
     this.resetBuffer(this.fTemp);
-    */
+    
     // todo: `switch` コメントアウト
     /*
     switch(this.mode){
@@ -363,17 +362,49 @@ void main(){
         this.fBack = this.createFramebuffer(this.width, this.height);
     }
     */
-    /*
+    
     this.fFront = this.createFramebuffer(this.width, this.height);
     this.fBack = this.createFramebuffer(this.width, this.height);
     this.gl.viewport(0, 0, this.width, this.height);
-    */
+    
+    console.log('fragmen: rect');
   }
   
   /**
    * reset renderer
    */
-  reset(){}
+  reset(){
+    this.rect();
+    let program = this.gl.createProgram();
+    //let vs = this.createShader(program, 0, this.preprocessVertexCode(this.VS));
+    let vs = this.createShader(program, 0, this.VS);
+    if(vs === false){
+      return;
+    }
+    
+    //let fs = this.createShader(program, 1, this.preprocessFragmentCode(this.FS));
+    let fs = this.createShader(program, 1, this.FS);
+    if(fs === false){
+      this.gl.deleteShader(vs);
+      return;
+    }
+    
+    this.gl.linkProgram(program);
+    this.gl.deleteShader(vs);
+    this.gl.deleteShader(fs);
+    if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
+      let msg = this.gl.getProgramInfoLog(program);
+      msg = this.formatErrorMessage(msg);
+      console.warn(msg);
+      if(this.onBuildCallback != null){
+        const t = getTimeString();
+        this.onBuildCallback('error', ` ● [ ${t} ] ${msg}`);
+      }
+      program = null;
+      return;
+    }
+    console.log('fragmen: reset');
+  }
   
   /**
    * rendering
@@ -389,13 +420,13 @@ void main(){
    * @return {boolean|WebGLShader} compiled shader object or false
    */
   createShader(p, i, j){
-    //console.log('createShader');
     if(!this.gl){return false;}
-    console.log('createShader');
+    
     const k = this.gl.createShader(this.gl.VERTEX_SHADER - i);
     this.gl.shaderSource(k, j);
     this.gl.compileShader(k);
     const t = getTimeString();
+    
     if(!this.gl.getShaderParameter(k, this.gl.COMPILE_STATUS)){
       let msg = this.gl.getShaderInfoLog(k);
       msg = this.formatErrorMessage(msg);
@@ -410,7 +441,7 @@ void main(){
       this.onBuildCallback('success', ` ● [ ${t} ] shader compile succeeded`);
       console.log('success', ` ● [ ${t} ] shader compile succeeded`);
     }
-    console.log('ぬけた');
+    
     this.gl.attachShader(p, k);
     const l = this.gl.getShaderInfoLog(k);
     if(l !== ''){console.info('shader info: ' + l);}
@@ -418,6 +449,68 @@ void main(){
   }
 
 
+  /**
+   * create framebuffer
+   * @param {number} width - set to framebuffer width
+   * @param {number} height - set to framebuffer height
+   * @return {object} custom object
+   * @property {WebGLFramebuffer} f
+   * @property {WebGLRenderbuffer} d
+   * @property {WebGLTexture} t
+   */
+  createFramebuffer(width, height){
+    const frameBuffer = this.gl.createFramebuffer();
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, frameBuffer);
+    const depthRenderBuffer = this.gl.createRenderbuffer();
+    this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, depthRenderBuffer);
+    this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16, width, height);
+    this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT, this.gl.RENDERBUFFER, depthRenderBuffer);
+    const fTexture = this.gl.createTexture();
+    this.gl.bindTexture(this.gl.TEXTURE_2D, fTexture);
+    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, fTexture, 0);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+    this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+    
+    return {f: frameBuffer, d: depthRenderBuffer, t: fTexture};
+  }
+    
+    
+
+  /**
+   * framebuffer reset
+   * @param {object} obj - custom object(this.createFramebuffer return value)
+   */
+  resetBuffer(obj){
+    if(!this.gl || !obj){return;}
+    if(obj.hasOwnProperty('f') && obj.f != null && this.gl.isFramebuffer(obj.f)){
+      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+      this.gl.deleteFramebuffer(obj.f);
+      obj.f = null;
+    }
+    if(obj.hasOwnProperty('d') && obj.d != null && this.gl.isRenderbuffer(obj.d)){
+      this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
+      this.gl.deleteRenderbuffer(obj.d);
+      obj.d = null;
+    }
+    if(obj.hasOwnProperty('t') && Array.isArray(obj.t) === true){
+      this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+      obj.t.forEach((texture) => {
+        this.gl.deleteTexture(texture);
+        texture = null;
+      });
+    }else if(obj.hasOwnProperty('t') && obj.t != null && this.gl.isTexture(obj.t)){
+      this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+      this.gl.deleteTexture(obj.t);
+      obj.t = null;
+    }
+    obj = null;
+  }
 
 }
 

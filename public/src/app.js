@@ -1,6 +1,6 @@
 import {Fragmen} from './fragmen.js';
 
-//console.log('start');
+console.log('start');
 
 (() => {
 let canvas = null;  // スクリーン
@@ -38,6 +38,7 @@ window.addEventListener('DOMContentLoaded', () => {
   resize();
   */
   
+  
   // メインとなる fragmen のインスタンス
   const option = Object.assign(FRAGMEN_OPTION, {
     target: canvas,
@@ -68,5 +69,5 @@ function resize(){
 
 
 })();
-//console.log('end');
+console.log('end');
 
