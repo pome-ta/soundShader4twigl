@@ -6,6 +6,10 @@ export class Fragmen {
   // xxx: `switch` 分岐をどうやってハンドリングするか
   static get MODE_CLASSIC(){return 0;}
   
+  /**
+   * 各種のデフォルトのソースコード
+   * @type {Array.<string>}
+   */
   static get DEFAULT_SOURCE(){
     // sources
     const classic = `precision highp float;
