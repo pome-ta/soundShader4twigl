@@ -5,6 +5,8 @@ import {Fragmen} from './fragmen.js';
 (() => {
 let canvas = null;  // スクリーン
 let fragmen = null;  // fragmen.js のインスタンス
+let currentSource = '';  // 直近のソースコード
+
 
 // fragmen.js 用のオプションの雛形
 const FRAGMEN_OPTION = {
@@ -23,7 +25,10 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // fragmen からデフォルトのソース一覧を取得
   const fragmenDefaultSource = Fragmen.DEFAULT_SOURCE;
+  // xxx: 無意味な渡し
+  currentSource = fragmenDefaultSource;
   
+  /*
   // ウィンドウのリサイズ時
   window.addEventListener('resize', () => {
     //console.log('resize');
@@ -31,20 +36,16 @@ window.addEventListener('DOMContentLoaded', () => {
   }, false);
   // 最初に一回リサイズ相当の処理を行っておく
   resize();
+  */
   
   // メインとなる fragmen のインスタンス
   const option = Object.assign(FRAGMEN_OPTION, {
     target: canvas,
     eventTarget: window,
   });
-  /*
-  console.log(option);
-  console.log('main');
-  console.log(canvas.width);
-  console.log(canvas.height);
-  */
   
   fragmen = new Fragmen(option);
+  fragmen.render(currentSource);
 }, false);
 
 

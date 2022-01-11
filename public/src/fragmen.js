@@ -184,8 +184,9 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
     this.buffers = null;
     
     // self binding
-    /*
+    
     this.render    = this.render.bind(this);
+    /*
     this.rect      = this.rect.bind(this);
     this.reset     = this.reset.bind(this);
     this.draw      = this.draw.bind(this);
@@ -245,6 +246,7 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
       this.resize = true;
       window.addEventListener('resize', this.rect, false);
     }
+    
     // render initial
     this.VS = 'attribute vec3 p;void main(){gl_Position=vec4(p,1.);}';
     
