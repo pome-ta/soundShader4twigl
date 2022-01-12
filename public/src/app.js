@@ -3,10 +3,11 @@ import {Fragmen} from './fragmen.js';
 console.log('start');
 
 (() => {
-let canvas = null;       // スクリーン
-let fragmen = null;      // fragmen.js のインスタンス
-let onomat = null;       // onomat.js のインスタンス
-let currentSource = '';  // 直近のソースコード
+let canvas = null;            // スクリーン
+let fragmen = null;           // fragmen.js のインスタンス
+let onomat = null;            // onomat.js のインスタンス
+let currentSource = '';       // 直近のソースコード
+let currentAudioSource = '';  // 直近の Sound Shader のソースコード
 
 
 // fragmen.js 用のオプションの雛形
