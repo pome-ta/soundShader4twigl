@@ -3,8 +3,9 @@ import {Fragmen} from './fragmen.js';
 console.log('start');
 
 (() => {
-let canvas = null;  // スクリーン
-let fragmen = null;  // fragmen.js のインスタンス
+let canvas = null;       // スクリーン
+let fragmen = null;      // fragmen.js のインスタンス
+let onomat = null;       // onomat.js のインスタンス
 let currentSource = '';  // 直近のソースコード
 
 
@@ -29,6 +30,7 @@ window.addEventListener('DOMContentLoaded', () => {
   currentSource = fragmenDefaultSource;
 
 
+/*
   // ウィンドウのリサイズ時
   window.addEventListener('resize', () => {
     //console.log('resize');
@@ -36,7 +38,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }, false);
   // 最初に一回リサイズ相当の処理を行っておく
   resize();
-
+*/
 
 
   // メインとなる fragmen のインスタンス
@@ -44,9 +46,9 @@ window.addEventListener('DOMContentLoaded', () => {
     target: canvas,
     eventTarget: window,
   });
-
   fragmen = new Fragmen(option);
   fragmen.render(currentSource);
+  
 }, false);
 
 

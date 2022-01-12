@@ -220,8 +220,8 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
 
     // xxx: `webgl2` で通るので、エラーハンドリング消す(最低😇)
     this.gl = this.canvas.getContext('webgl2', opt);
-    /*
     this.isWebGL2 = this.gl != null;
+    /*
     if(this.isWebGL2 !== true){
       this.gl = this.canvas.getContext('webgl', opt);
       this.gl.getExtension('OES_standard_derivatives');
@@ -366,7 +366,7 @@ void main(){
     this.fBack = this.createFramebuffer(this.width, this.height);
     this.gl.viewport(0, 0, this.width, this.height);
 
-    console.log('fragmen: rect');
+    //console.log('fragmen: rect');
   }
 
   /**
