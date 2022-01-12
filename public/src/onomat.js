@@ -1,6 +1,7 @@
 
+
 // https://www.skypack.dev/view/eventemitter3
-import eventemitter3 from './Eventemitter3.js';
+import eventemitter3 from './modules/Eventemitter3.js';
 
 /**
  * @class
@@ -283,8 +284,8 @@ uniform float sampleRate;
     // WebAudio 関係の初期設定
     const sample = this.audioCtx.sampleRate;
     const buffer = this.audioCtx.createBuffer(2, sample * Onomat.DURATION, sample);
-    
-    
+
+
     const channelDataLeft  = buffer.getChannelData(0);
     const channelDataRight = buffer.getChannelData(1);
     const range = Onomat.BUFFER_WIDTH * Onomat.BUFFER_HEIGHT;
