@@ -22,13 +22,13 @@ window.addEventListener('DOMContentLoaded', () => {
   console.log('DOMContentLoaded');
   // DOM への参照
   canvas = document.querySelector('#webgl');
-  
+
   // fragmen からデフォルトのソース一覧を取得
   const fragmenDefaultSource = Fragmen.DEFAULT_SOURCE;
   // xxx: 無意味な渡し
   currentSource = fragmenDefaultSource;
-  
-  /*
+
+
   // ウィンドウのリサイズ時
   window.addEventListener('resize', () => {
     //console.log('resize');
@@ -36,15 +36,15 @@ window.addEventListener('DOMContentLoaded', () => {
   }, false);
   // 最初に一回リサイズ相当の処理を行っておく
   resize();
-  */
-  
-  
+
+
+
   // メインとなる fragmen のインスタンス
   const option = Object.assign(FRAGMEN_OPTION, {
     target: canvas,
     eventTarget: window,
   });
-  
+
   fragmen = new Fragmen(option);
   fragmen.render(currentSource);
 }, false);
@@ -60,12 +60,11 @@ function resize(){
   canvas.width = bound.width;
   canvas.height = bound.height;
   /*
-  console.log('resize');
-  console.log(canvas.width);
-  console.log(canvas.height);
-  */
+console.log('resize');
+console.log(canvas.width);
+console.log(canvas.height);
+*/
 }
-
 
 
 })();

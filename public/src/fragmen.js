@@ -1,4 +1,3 @@
-
 export class Fragmen {
   /**
    * resolution, mouse, time, backbuffer の各種 uniform 定義で動作するクラシックモード
@@ -186,9 +185,9 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
 
     // self binding
     this.render = this.render.bind(this);
-    this.rect = this.rect.bind(this);
-    this.reset = this.reset.bind(this);
-    this.draw      = this.draw.bind(this);
+    this.rect   = this.rect.bind(this);
+    this.reset  = this.reset.bind(this);
+    this.draw   = this.draw.bind(this);
     /*
     this.mouseMove = this.mouseMove.bind(this);
     this.keyDown   = this.keyDown.bind(this);
@@ -277,7 +276,6 @@ void main(){
     this.postUniLocation = {};
     this.postUniLocation.texture = this.gl.getUniformLocation(this.postProgram, 'texture');
     this.postAttLocation = this.gl.getAttribLocation(this.postProgram, 'position');
-
 
     this.post300VS = `#version 300 es
 in  vec3 position;
