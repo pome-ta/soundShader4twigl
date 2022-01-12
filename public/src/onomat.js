@@ -1,5 +1,3 @@
-
-
 // https://www.skypack.dev/view/eventemitter3
 import eventemitter3 from './modules/Eventemitter3.js';
 
@@ -156,6 +154,8 @@ uniform float sampleRate;
   init(){
     // canvas を内部的に生成して WebGL を初期化する
     this.canvas = document.createElement('canvas');
+    const wrap = document.querySelector('#wrap');
+    wrap.appendChild(this.canvas);
     this.canvas.width = Onomat.BUFFER_WIDTH;
     this.canvas.height = Onomat.BUFFER_HEIGHT;
     // WebGL 2.0 での初期化を試みる

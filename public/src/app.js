@@ -75,7 +75,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }, false);
   
   wrap.addEventListener('click', () => {
-    console.log('click');
     /*
     if(audioToggle.checked !== true || latestAudioStatus !== 'success'){return;}
     ++soundPlay;
