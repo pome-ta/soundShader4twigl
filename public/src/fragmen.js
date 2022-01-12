@@ -187,8 +187,8 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
     this.render = this.render.bind(this);
     this.rect = this.rect.bind(this);
     this.reset = this.reset.bind(this);
-    /*
     this.draw      = this.draw.bind(this);
+    /*
     this.mouseMove = this.mouseMove.bind(this);
     this.keyDown   = this.keyDown.bind(this);
     */
@@ -403,13 +403,108 @@ void main(){
       program = null;
       return;
     }
+    
+    
+    let resolution = 'resolution';
+    let mouse      = 'mouse';
+    let time       = 'time';
+    let frame      = 'frame';
+    let sound      = 'sound';
+    let backbuffer = 'backbuffer';
+    
+    if(this.program != null){this.gl.deleteProgram(this.program);}
+    
+    this.program = program;
+    this.gl.useProgram(this.program);
+    this.uniLocation = {};
+    this.uniLocation.resolution = this.gl.getUniformLocation(this.program, resolution);
+    this.uniLocation.mouse = this.gl.getUniformLocation(this.program, mouse);
+    this.uniLocation.time = this.gl.getUniformLocation(this.program, time);
+    this.uniLocation.frame = this.gl.getUniformLocation(this.program, frame);
+    this.uniLocation.sound = this.gl.getUniformLocation(this.program, sound);
+    
+    
+    this.uniLocation.sampler = this.gl.getUniformLocation(this.program, backbuffer);
+    
+    this.attLocation = this.gl.getAttribLocation(this.program, 'p');
+    this.mousePosition = [0.0, 0.0];
+    this.startTime = Date.now();
+    this.frameCount = 0;
+    
+    if(!this.run){
+      this.run = true;
+      this.draw();
+    }
+    
     console.log('fragmen: reset');
   }
   
   /**
    * rendering
    */
-  draw(){}
+  draw(){
+    if(!this.run){return;}
+    if(this.animation === true){
+      requestAnimationFrame(this.draw);
+    }
+    this.nowTime = (Date.now() - this.startTime) * 0.001;
+    ++this.frameCount;
+    this.gl.useProgram(this.program);
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.fFront.f);
+    
+    if(Array.isArray(this.fBack.t) === true){
+      this.gl.drawBuffers(this.buffers);
+    }else{
+      this.gl.activeTexture(this.gl.TEXTURE0);
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.fBack.t);
+      this.gl.uniform1i(this.uniLocation.sampler, 0);
+    }
+    
+    
+    this.gl.enableVertexAttribArray(this.attLocation);
+    this.gl.vertexAttribPointer(this.attLocation, 3, this.gl.FLOAT, false, 0, 0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.gl.uniform2fv(this.uniLocation.mouse, this.mousePosition);
+    this.gl.uniform1f(this.uniLocation.time, this.nowTime);
+    this.gl.uniform1f(this.uniLocation.frame, this.frameCount);
+    this.gl.uniform2fv(this.uniLocation.resolution, [this.width, this.height]);
+    this.gl.uniform1f(this.uniLocation.sound, this.frequency);
+    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+    
+    console.log(this.fBack);
+    if(Array.isArray(this.fBack.t) === true){
+      this.gl.useProgram(this.post300Program);
+      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+      this.gl.activeTexture(this.gl.TEXTURE0);
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.fFront.t[0]);
+      this.gl.enableVertexAttribArray(this.post300AttLocation);
+      this.gl.vertexAttribPointer(this.post300AttLocation, 3, this.gl.FLOAT, false, 0, 0);
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+      this.gl.uniform1i(this.post300UniLocation.texture, 0);
+    }else{
+      this.gl.useProgram(this.postProgram);
+      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+      this.gl.activeTexture(this.gl.TEXTURE0);
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.fFront.t);
+      this.gl.enableVertexAttribArray(this.postAttLocation);
+      this.gl.vertexAttribPointer(this.postAttLocation, 3, this.gl.FLOAT, false, 0, 0);
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+      this.gl.uniform1i(this.postUniLocation.texture, 0);
+    }
+    
+    this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+    
+    this.gl.flush();
+    this.fTemp = this.fFront;
+    this.fFront = this.fBack;
+    this.fBack = this.fTemp;
+    
+    if(this.onDrawCallback != null){
+      this.onDrawCallback();
+    }
+    
+    //console.log('fragmen: draw');
+  }
   
   
   /**
@@ -511,6 +606,16 @@ void main(){
     }
     obj = null;
   }
+  
+  
+  /**
+   * 描画完了時に呼ばれるコールバックを登録する
+   * @param {function}
+   */
+  onDraw(callback){
+    this.onDrawCallback = callback;
+  }
+  
 
 }
 
