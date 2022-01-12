@@ -1,3 +1,4 @@
+
 export class Fragmen {
   /**
    * resolution, mouse, time, backbuffer の各種 uniform 定義で動作するクラシックモード
@@ -5,7 +6,7 @@ export class Fragmen {
    */
   // xxx: `switch` 分岐をどうやってハンドリングするか
   static get MODE_CLASSIC(){return 0;}
-  
+
   /**
    * 各種のデフォルトのソースコード
    * @type {Array.<string>}
@@ -19,9 +20,9 @@ uniform float time;
 uniform sampler2D backbuffer;
 void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(int i=0;i<8;++i){p.xy=abs(p)/abs(dot(p,p))-vec2(.9+cos(time*.2)*.4);}gl_FragColor=vec4(p.xxy,1);}`;
 
-  return classic;
+    return classic;
   }
-  
+
   /**
    * constructor of fragmen.js
    * @param {object} option - オプション
@@ -182,7 +183,7 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
      * @type {Array.<number>}
      */
     this.buffers = null;
-    
+
     // self binding
     this.render = this.render.bind(this);
     this.rect = this.rect.bind(this);
@@ -205,7 +206,7 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
     if(option === null || option === undefined){return;}
     if(!option.hasOwnProperty('target') || option.target === null || option.target === undefined){return;}
     if(!(option.target instanceof HTMLElement)){return;}
-    
+
     // init canvas
     this.target = this.eventTarget = option.target;
     if(this.target.tagName.match(/canvas/i)){
@@ -214,10 +215,10 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
       this.canvas = document.createElement('canvas');
       this.target.appendChild(this.canvas);
     }
-    
+
     // init webgl context
     const opt = {alpha: false, preserveDrawingBuffer: true};
-    
+
     // xxx: `webgl2` で通るので、エラーハンドリング消す(最低😇)
     this.gl = this.canvas.getContext('webgl2', opt);
     /*
@@ -230,7 +231,7 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
       console.log('webgl unsupported');
       return;
     }*/
-    
+
     // check event
     if(option.hasOwnProperty('eventTarget') && option.eventTarget !== null && option.eventTarget !== undefined){
       this.eventTarget = option.eventTarget;
@@ -245,10 +246,10 @@ void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(in
       this.resize = true;
       window.addEventListener('resize', this.rect, false);
     }
-    
+
     // render initial
     this.VS = 'attribute vec3 p;void main(){gl_Position=vec4(p,1.);}';
-    
+
     this.postVS = `
 attribute vec3 position;
 varying   vec2 vTexCoord;
@@ -317,7 +318,7 @@ void main(){
     this.gl.disable(this.gl.BLEND);
     this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
   }
-  
+
   /**
    * rendering hub
    * @param {string} source - fragment shader source
@@ -332,7 +333,7 @@ void main(){
     this.reset();
     return this;
   }
-  
+
   /**
    * set rect
    */
@@ -342,11 +343,11 @@ void main(){
     this.height = bound.height;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
-    
+
     this.resetBuffer(this.fFront);
     this.resetBuffer(this.fBack);
     this.resetBuffer(this.fTemp);
-    
+
     // todo: `switch` コメントアウト
     /*
     switch(this.mode){
@@ -362,14 +363,14 @@ void main(){
         this.fBack = this.createFramebuffer(this.width, this.height);
     }
     */
-    
+
     this.fFront = this.createFramebuffer(this.width, this.height);
     this.fBack = this.createFramebuffer(this.width, this.height);
     this.gl.viewport(0, 0, this.width, this.height);
-    
+
     console.log('fragmen: rect');
   }
-  
+
   /**
    * reset renderer
    */
@@ -381,14 +382,14 @@ void main(){
     if(vs === false){
       return;
     }
-    
+
     //let fs = this.createShader(program, 1, this.preprocessFragmentCode(this.FS));
     let fs = this.createShader(program, 1, this.FS);
     if(fs === false){
       this.gl.deleteShader(vs);
       return;
     }
-    
+
     this.gl.linkProgram(program);
     this.gl.deleteShader(vs);
     this.gl.deleteShader(fs);
@@ -403,17 +404,17 @@ void main(){
       program = null;
       return;
     }
-    
-    
+
+
     let resolution = 'resolution';
     let mouse      = 'mouse';
     let time       = 'time';
     let frame      = 'frame';
     let sound      = 'sound';
     let backbuffer = 'backbuffer';
-    
+
     if(this.program != null){this.gl.deleteProgram(this.program);}
-    
+
     this.program = program;
     this.gl.useProgram(this.program);
     this.uniLocation = {};
@@ -422,23 +423,23 @@ void main(){
     this.uniLocation.time = this.gl.getUniformLocation(this.program, time);
     this.uniLocation.frame = this.gl.getUniformLocation(this.program, frame);
     this.uniLocation.sound = this.gl.getUniformLocation(this.program, sound);
-    
-    
+
+
     this.uniLocation.sampler = this.gl.getUniformLocation(this.program, backbuffer);
-    
+
     this.attLocation = this.gl.getAttribLocation(this.program, 'p');
     this.mousePosition = [0.0, 0.0];
     this.startTime = Date.now();
     this.frameCount = 0;
-    
+
     if(!this.run){
       this.run = true;
       this.draw();
     }
-    
+
     console.log('fragmen: reset');
   }
-  
+
   /**
    * rendering
    */
@@ -451,7 +452,7 @@ void main(){
     ++this.frameCount;
     this.gl.useProgram(this.program);
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.fFront.f);
-    
+
     if(Array.isArray(this.fBack.t) === true){
       this.gl.drawBuffers(this.buffers);
     }else{
@@ -459,8 +460,8 @@ void main(){
       this.gl.bindTexture(this.gl.TEXTURE_2D, this.fBack.t);
       this.gl.uniform1i(this.uniLocation.sampler, 0);
     }
-    
-    
+
+
     this.gl.enableVertexAttribArray(this.attLocation);
     this.gl.vertexAttribPointer(this.attLocation, 3, this.gl.FLOAT, false, 0, 0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
@@ -470,8 +471,7 @@ void main(){
     this.gl.uniform2fv(this.uniLocation.resolution, [this.width, this.height]);
     this.gl.uniform1f(this.uniLocation.sound, this.frequency);
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-    
-    console.log(this.fBack);
+
     if(Array.isArray(this.fBack.t) === true){
       this.gl.useProgram(this.post300Program);
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
@@ -491,22 +491,22 @@ void main(){
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
       this.gl.uniform1i(this.postUniLocation.texture, 0);
     }
-    
+
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-    
+
     this.gl.flush();
     this.fTemp = this.fFront;
     this.fFront = this.fBack;
     this.fBack = this.fTemp;
-    
+
     if(this.onDrawCallback != null){
       this.onDrawCallback();
     }
-    
+
     //console.log('fragmen: draw');
   }
-  
-  
+
+
   /**
    * create and compile shader
    * @param {WebGLProgram} p - target program object
@@ -516,12 +516,12 @@ void main(){
    */
   createShader(p, i, j){
     if(!this.gl){return false;}
-    
+
     const k = this.gl.createShader(this.gl.VERTEX_SHADER - i);
     this.gl.shaderSource(k, j);
     this.gl.compileShader(k);
     const t = getTimeString();
-    
+
     if(!this.gl.getShaderParameter(k, this.gl.COMPILE_STATUS)){
       let msg = this.gl.getShaderInfoLog(k);
       msg = this.formatErrorMessage(msg);
@@ -536,7 +536,7 @@ void main(){
       this.onBuildCallback('success', ` ● [ ${t} ] shader compile succeeded`);
       console.log('success', ` ● [ ${t} ] shader compile succeeded`);
     }
-    
+
     this.gl.attachShader(p, k);
     const l = this.gl.getShaderInfoLog(k);
     if(l !== ''){console.info('shader info: ' + l);}
@@ -571,11 +571,11 @@ void main(){
     this.gl.bindTexture(this.gl.TEXTURE_2D, null);
     this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-    
+
     return {f: frameBuffer, d: depthRenderBuffer, t: fTexture};
   }
-    
-    
+
+
 
   /**
    * framebuffer reset
@@ -606,8 +606,8 @@ void main(){
     }
     obj = null;
   }
-  
-  
+
+
   /**
    * 描画完了時に呼ばれるコールバックを登録する
    * @param {function}
@@ -615,7 +615,7 @@ void main(){
   onDraw(callback){
     this.onDrawCallback = callback;
   }
-  
+
 
 }
 
@@ -624,9 +624,9 @@ void main(){
  * @return {string}
  */
 function getTimeString(){
-    const d = new Date();
-    const h = (new Array(2).join('0') + d.getHours()).substr(-2, 2);
-    const m = (new Array(2).join('0') + d.getMinutes()).substr(-2, 2);
-    return `${h}:${m}`;
+  const d = new Date();
+  const h = (new Array(2).join('0') + d.getHours()).substr(-2, 2);
+  const m = (new Array(2).join('0') + d.getMinutes()).substr(-2, 2);
+  return `${h}:${m}`;
 }
 
