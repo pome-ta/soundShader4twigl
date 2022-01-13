@@ -1,34 +1,22 @@
 import {Fragmen} from './fragmen.js';
 import {Onomat} from './onomat.js';
 
-
-//let response = await fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits');
-
-//let text = await response.text(); // レスポンスボディをテキストとして読む
-/*
-fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits')
-  .then(response => response.json())
-  .then(commits => console.log(commits[0].author.login));
-*/
+let soundShader = 'びまよ';
 //(() => {
-//const soundShader_path = new URL(`soundShader.py`, location.protocol + '//' + location.host + location.pathname).href
-
 const soundShader_path = new URL(`shader/sound.py`, location.protocol + '//' + location.host + location.pathname).href
 
-
-console.log(soundShader_path);
 fetch(soundShader_path)
   .then((res) => res.text())
-  .then((soundShader) => {
+  .then((soundShader_text) => {
     console.log('fetch');
-    console.log(soundShader);
+    console.log(soundShader_text);
+    soundShader = soundShader_text;
   });
-
-
 
 console.log('start');
 
 (() => {
+console.log('す');
 let canvas = null;            // スクリーン
 let fragmen = null;           // fragmen.js のインスタンス
 let onomat = null;            // onomat.js のインスタンス
@@ -92,6 +80,8 @@ window.addEventListener('DOMContentLoaded', () => {
   fragmen.render(currentSource);
   
   console.log(currentAudioSource);
+  console.log('そーす');
+  console.log(soundShader);
   //updateAudio(currentAudioSource, true);
   //updateAudio(currentAudioSource);
   
