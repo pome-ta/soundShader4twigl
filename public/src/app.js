@@ -1,6 +1,31 @@
 import {Fragmen} from './fragmen.js';
 import {Onomat} from './onomat.js';
 
+
+//let response = await fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits');
+
+//let text = await response.text(); // レスポンスボディをテキストとして読む
+/*
+fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits')
+  .then(response => response.json())
+  .then(commits => console.log(commits[0].author.login));
+*/
+//(() => {
+//const soundShader_path = new URL(`soundShader.py`, location.protocol + '//' + location.host + location.pathname).href
+
+const soundShader_path = new URL(`shader/sound.py`, location.protocol + '//' + location.host + location.pathname).href
+
+
+console.log(soundShader_path);
+fetch(soundShader_path)
+  .then((res) => res.text())
+  .then((soundShader) => {
+    console.log('fetch');
+    console.log(soundShader);
+  });
+
+
+
 console.log('start');
 
 (() => {
@@ -42,7 +67,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // todo: ユーザーアクションをしていないと（タップとか）音は出ない
   onomatSetting(true);
-  update(currentSource);
+  //update(currentSource);
   //counter.textContent = `${editor.getValue().length}`;
   //audioCounter.textContent = `${audioEditor.getValue().length}`;
 
@@ -71,6 +96,7 @@ window.addEventListener('DOMContentLoaded', () => {
   //updateAudio(currentAudioSource);
   
   // 着火のおまじない
+  // xxx: 事前準備してるコードを走らせるので簡単に
   const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
   document.addEventListener(eventName, initAudioContext);
   function initAudioContext(){
