@@ -67,19 +67,25 @@ window.addEventListener('DOMContentLoaded', () => {
   fragmen.render(currentSource);
   
   console.log(currentAudioSource);
+  //updateAudio(currentAudioSource, true);
+  //updateAudio(currentAudioSource);
+  
   
   
   // サウンドシェーダ関連
+  /*
   wrap.addEventListener('change', () => {
     onomatSetting();
   }, false);
-  
+  */
   wrap.addEventListener('click', () => {
     /*
     if(audioToggle.checked !== true || latestAudioStatus !== 'success'){return;}
     ++soundPlay;
     */
+    console.log(onomat.isPlay);
     updateAudio(currentAudioSource, true);
+    
     /*
     // 配信中はステータスとは無関係に状態を送る
     if(currentChannelId != null && (broadcastMode === 'owner' || broadcastMode === 'friend')){
@@ -92,6 +98,15 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }*/
   }, false);
+  
+  wrap.addEventListener('click', () => {
+    /*
+    if(musician != null){musician.stop();}
+    if(audioToggle.checked !== true){return;}
+    */
+    //if(!onomat.isPlay){onomat.stop();}
+  }, false);
+  
   
 }, false);
 
