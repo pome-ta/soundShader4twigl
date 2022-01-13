@@ -70,7 +70,14 @@ window.addEventListener('DOMContentLoaded', () => {
   //updateAudio(currentAudioSource, true);
   //updateAudio(currentAudioSource);
   
-  
+  // 着火のおまじない
+  const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
+  document.addEventListener(eventName, initAudioContext);
+  function initAudioContext(){
+    document.removeEventListener(eventName, initAudioContext);
+    // wake up AudioContext
+    onomat.audioCtx.resume();
+  }
   
   // サウンドシェーダ関連
   /*
@@ -84,7 +91,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ++soundPlay;
     */
     console.log(onomat.isPlay);
-    updateAudio(currentAudioSource, true);
+    //updateAudio(currentAudioSource, true);
     
     /*
     // 配信中はステータスとは無関係に状態を送る
