@@ -1,6 +1,9 @@
 // https://www.skypack.dev/view/eventemitter3
 import eventemitter3 from './modules/Eventemitter3.js';
 
+import {wavVisualize} from './visualizar.js';
+import {barVisualize} from './visualizar.js';
+
 /**
  * @class
  * @extends EventEmitter3
@@ -43,9 +46,9 @@ export class Onomat extends eventemitter3 {
    */
   static get FRAGMENT_SHADER_SOURCE_DEFAULT(){return `vec2 mainSound(float time){
   //return vec2(sin(6.2831*440.*time)*exp(-3.*time));
-  return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
+  //return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
   //return vec2((fract(sin(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.));
-  //return vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
+  return vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
 }`;};
   /**
    * フラグメントシェーダのソースに付与されるヘッダ部分
@@ -146,6 +149,11 @@ uniform float sampleRate;
      * @type {boolean}
      */
     this.isPlay = false;
+    
+    // Visualize
+    // @type {HTMLCanvasElement}
+    this.waveCanvas = null;
+    this.barCanvas = null;
 
     // initialize
     this.init();
@@ -158,8 +166,14 @@ uniform float sampleRate;
     // canvas を内部的に生成して WebGL を初期化する
     this.canvas = document.createElement('canvas');
     
+    this.waveCanvas = document.querySelector('#waveVisualizer');
+    this.barCanvas = document.querySelector('#barVisualizer');
+
+    
+    /*
     const wrap = document.querySelector('#wrap');
     wrap.appendChild(this.canvas);
+    */
     
     this.canvas.width = Onomat.BUFFER_WIDTH;
     this.canvas.height = Onomat.BUFFER_HEIGHT;
@@ -320,6 +334,10 @@ uniform float sampleRate;
     this.audioAnalyserNode.smoothingTimeConstant = 0.8;
     this.audioAnalyserNode.fftSize = Onomat.FFT_SIZE * 2;
     this.audioFrequencyBinCount = this.audioAnalyserNode.frequencyBinCount;
+    
+    // Visualize
+    wavVisualize(this.waveCanvas, this.audioAnalyserNode);
+    barVisualize(this.barCanvas, this.audioAnalyserNode);
 
     this.audioBufferSourceNode.connect(this.audioAnalyserNode);
     this.audioAnalyserNode.connect(this.audioCtx.destination);
