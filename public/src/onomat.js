@@ -43,9 +43,9 @@ export class Onomat extends eventemitter3 {
    */
   static get FRAGMENT_SHADER_SOURCE_DEFAULT(){return `vec2 mainSound(float time){
   //return vec2(sin(6.2831*440.*time)*exp(-3.*time));
-  //return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
+  return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
   //return vec2((fract(sin(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.));
-  return vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
+  //return vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
 }`;};
   /**
    * フラグメントシェーダのソースに付与されるヘッダ部分

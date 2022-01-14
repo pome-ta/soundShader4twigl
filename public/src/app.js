@@ -1,22 +1,28 @@
 import {Fragmen} from './fragmen.js';
 import {Onomat} from './onomat.js';
 
-let soundShader = 'びまよ';
-//(() => {
-const soundShader_path = new URL(`shader/sound.py`, location.protocol + '//' + location.host + location.pathname).href
-
-fetch(soundShader_path)
-  .then((res) => res.text())
-  .then((soundShader_text) => {
-    console.log('fetch');
-    console.log(soundShader_text);
-    soundShader = soundShader_text;
-  });
 
 console.log('start');
 
+
+const grp = `vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time))`;
+
+const glShader = `precision highp float;
+uniform vec2 resolution;
+uniform vec2 mouse;
+uniform float time;
+uniform sampler2D backbuffer;
+void main(){vec2 r=resolution,p=(gl_FragCoord.xy*2.-r)/min(r.x,r.y)-mouse;for(int i=0;i<8;++i){p.xy=abs(p)/abs(dot(p,p))-vec2(.9+cos(time*.2)*.4);}gl_FragColor=vec4(${grp},1.,1);}`;
+
+
+const glSound = `vec2 mainSound(float time){
+  return vec2(sin(6.2831*440.*time)*exp(-3.*time));
+}`;
+
+
+
+
 (() => {
-console.log('す');
 let canvas = null;            // スクリーン
 let fragmen = null;           // fragmen.js のインスタンス
 let onomat = null;            // onomat.js のインスタンス
@@ -45,7 +51,8 @@ window.addEventListener('DOMContentLoaded', () => {
   // fragmen からデフォルトのソース一覧を取得
   const fragmenDefaultSource = Fragmen.DEFAULT_SOURCE;
   // xxx: 無意味な渡し
-  currentSource = fragmenDefaultSource;
+  //currentSource = fragmenDefaultSource;
+  currentSource = glShader;
   
   // audioToggle が checked ではないかサウンドシェーダのソースが空の場合既定のソースを利用する
   // xxx: `audioToggle` は設定してない
@@ -80,8 +87,6 @@ window.addEventListener('DOMContentLoaded', () => {
   fragmen.render(currentSource);
   
   console.log(currentAudioSource);
-  console.log('そーす');
-  console.log(soundShader);
   //updateAudio(currentAudioSource, true);
   //updateAudio(currentAudioSource);
   
