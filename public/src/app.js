@@ -184,12 +184,14 @@ function onomatSetting(play = true){
       */
     });
     // 再生まで行うよう引数で指定されている場合は再生処理をタイマーで登録
+    
     if(play === true){
       setTimeout(() => {
         //updateAudio(audioEditor.getValue(), true);
         updateAudio(currentAudioSource, true);
       }, 500);
     }
+    
   }
   /*
   // 表示・非表示の切り替え

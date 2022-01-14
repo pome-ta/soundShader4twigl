@@ -253,6 +253,7 @@ uniform float sampleRate;
     this.gl.deleteShader(this.fs);
     if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
       let msg = this.gl.getProgramInfoLog(program);
+      console.log('render');
       console.warn(msg);
       const t = getTimeString();
       this.emit('build', {
@@ -399,6 +400,7 @@ uniform float sampleRate;
     this.gl.compileShader(shader);
     if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
       let msg = this.gl.getShaderInfoLog(shader);
+      console.log('createShader');
       console.warn(msg);
       const t = getTimeString();
       this.emit('build', {

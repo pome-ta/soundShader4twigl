@@ -49,7 +49,7 @@ export function barVisualize(canvasTag, analyze) {
   canvasTag.setAttribute('height', intendedWidth / setting_height)
   const WIDTH = canvasTag.width;
   const HEIGHT = canvasTag.height;
-  console.log('t' + HEIGHT);
+  //console.log('t' + HEIGHT);
   const barAnalyze = analyze;
   barAnalyze.fftSize = 512;
 
