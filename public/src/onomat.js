@@ -45,6 +45,7 @@ export class Onomat extends eventemitter3 {
    * @type {string}
    */
   static get FRAGMENT_SHADER_SOURCE_DEFAULT(){return `vec2 mainSound(float time){
+  //return vec2(sin(6.2831*440.*time));
   //return vec2(sin(6.2831*440.*time)*exp(-3.*time));
   //return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
   //return vec2((fract(sin(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.));
@@ -336,6 +337,8 @@ uniform float sampleRate;
     this.audioFrequencyBinCount = this.audioAnalyserNode.frequencyBinCount;
     
     // Visualize
+    this.audioAnalyserNode.minDecibels = -90;
+    this.audioAnalyserNode.maxDecibels = -10;
     wavVisualize(this.waveCanvas, this.audioAnalyserNode);
     barVisualize(this.barCanvas, this.audioAnalyserNode);
 
