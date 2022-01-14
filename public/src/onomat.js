@@ -49,7 +49,9 @@ export class Onomat extends eventemitter3 {
   //return vec2(sin(6.2831*440.*time)*exp(-3.*time));
   //return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
   //return vec2((fract(sin(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.));
-  return vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
+  vec2 kick = vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
+  vec2 hh = vec2((fract(cos(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.))-0.5;
+  return kick + hh;
 }`;};
   /**
    * フラグメントシェーダのソースに付与されるヘッダ部分
@@ -191,6 +193,9 @@ uniform float sampleRate;
     }
     // 頂点シェーダを生成
     this.vs = this.createShader(this.versionDirective(this.attributeDirective(Onomat.VERTEX_SHADER_SOURCE), false), true);
+    
+    console.log(this.versionDirective(this.attributeDirective(Onomat.VERTEX_SHADER_SOURCE), false));
+    
     // AudioContext を生成
     this.audioCtx = new AudioContext();
   }
