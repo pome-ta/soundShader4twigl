@@ -249,6 +249,8 @@ uniform float sampleRate;
     const footer = this.outDirective(Onomat.FRAGMENT_SHADER_SOURCE_FOOTER);
     const fragment = `${header}\n${source}\n${footer}`;
     // シェーダをコンパイルしプログラムをリンク
+    
+    console.log(fragment);
     this.fs = this.createShader(fragment, false);
     if(this.fs == null || this.fs === false){return;}
     let program = this.gl.createProgram();
