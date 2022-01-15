@@ -194,8 +194,6 @@ uniform float sampleRate;
     // 頂点シェーダを生成
     this.vs = this.createShader(this.versionDirective(this.attributeDirective(Onomat.VERTEX_SHADER_SOURCE), false), true);
     
-    console.log(this.versionDirective(this.attributeDirective(Onomat.VERTEX_SHADER_SOURCE), false));
-    
     // AudioContext を生成
     this.audioCtx = new AudioContext();
   }
@@ -353,6 +351,8 @@ uniform float sampleRate;
     this.audioBufferSourceNode.connect(this.audioAnalyserNode);
     this.audioAnalyserNode.connect(this.audioCtx.destination);
     this.audioBufferSourceNode.buffer = buffer;
+    console.log('buffer');
+    console.log(buffer);
     this.audioBufferSourceNode.loop = false;
     this.audioBufferSourceNode.start();
     this.isPlay = true;
@@ -417,6 +417,7 @@ uniform float sampleRate;
       });
       return false;
     }
+    //console.log(source);
     return shader;
   }
 }

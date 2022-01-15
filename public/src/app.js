@@ -169,7 +169,8 @@ function onomatSetting(play = true){
     onomat = new Onomat();
     
     // ビルド時のイベントを登録
-    onomat.on('build', (res) => {
+    
+    //onomat.on('build', (res) => {
       /*
       latestAudioStatus = res.status;
       audioLineout.classList.remove('warn');
@@ -182,7 +183,8 @@ function onomatSetting(play = true){
         link.classList.add('disabled');
       }
       */
-    });
+    //});
+    
     // 再生まで行うよう引数で指定されている場合は再生処理をタイマーで登録
     
     if(play === true){
