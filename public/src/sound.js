@@ -141,16 +141,13 @@ gl.viewport(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT);
 const sample = audioCtx.sampleRate;
 const buffer = audioCtx.createBuffer(2, sample * DURATION, sample);
 
-
-
-
 const channelDataLeft  = buffer.getChannelData(0);
 const channelDataRight = buffer.getChannelData(1);
 const range = BUFFER_WIDTH * BUFFER_HEIGHT;
 const pixel = new Uint8Array(BUFFER_WIDTH * BUFFER_HEIGHT * 4);
-
+gl.uniform1f(uniLocation.sampleRate, sample);
 const block = Math.ceil((sample * DURATION) / range);
-
+console.log(uniLocation.sampleRate);
 
 for(let i = 0, j = block; i < j; ++i){
   gl.uniform1f(uniLocation.blockOffset, i * range / sample);
@@ -161,6 +158,8 @@ for(let i = 0, j = block; i < j; ++i){
     channelDataRight[i * range + k] = (pixel[k * 4 + 2] + 256 * pixel[k * 4 + 3]) / 65535 * 2 - 1;
   }
 }
+
+
 
 // 再生のための準備と再生処理
 const audioBufferSourceNode = audioCtx.createBufferSource();
@@ -179,7 +178,7 @@ audioBufferSourceNode.connect(audioAnalyserNode);
 audioAnalyserNode.connect(audioCtx.destination);
 audioBufferSourceNode.buffer = buffer;
 
-console.log(buffer);
+//console.log(buffer);
 audioBufferSourceNode.loop = false;
 audioBufferSourceNode.start();
 
