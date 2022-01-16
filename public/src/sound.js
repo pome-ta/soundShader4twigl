@@ -1,6 +1,6 @@
 import {wavVisualize} from './visualizar.js';
 import {barVisualize} from './visualizar.js';
-
+window.addEventListener('DOMContentLoaded', () => {
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE;
 const DURATION = 180;
@@ -38,39 +38,6 @@ void main(){
 }
 `;
 
-/*
-#version 300 es
-precision highp float;
-uniform float blockOffset;
-uniform float sampleRate;
-
-out vec4 outColor;
-
-vec2 mainSound(float time){
-  //return vec2(sin(6.2831*440.*time));
-  //return vec2(sin(6.2831*440.*time)*exp(-3.*time));
-  //return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
-  //return vec2((fract(sin(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.));
-  vec2 kick = vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
-  vec2 hh = vec2((fract(cos(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.))-0.5;
-  return kick + hh;
-}
-void main(){
-  float time = blockOffset + ((gl_FragCoord.x - 0.5) + (gl_FragCoord.y - 0.5) * 512.0) / sampleRate;
-  vec2 XY = mainSound(time);
-  vec2 XV = floor((0.5 + 0.5 * XY) * 65536.0);
-  vec2 XL = mod(XV, 256.0) / 255.0;
-  vec2 XH = floor(XV / 256.0) / 255.0;
-  outColor = vec4(XL.x, XH.x, XL.y, XH.y);
-}
-*/
-
-
-/*
-#version 300 es
-in vec3 p;void main(){gl_Position=vec4(p,1.);}
-
-*/
 
 
 const canvas = document.createElement('canvas');
@@ -147,7 +114,6 @@ const range = BUFFER_WIDTH * BUFFER_HEIGHT;
 const pixel = new Uint8Array(BUFFER_WIDTH * BUFFER_HEIGHT * 4);
 gl.uniform1f(uniLocation.sampleRate, sample);
 const block = Math.ceil((sample * DURATION) / range);
-console.log(uniLocation.sampleRate);
 
 for(let i = 0, j = block; i < j; ++i){
   gl.uniform1f(uniLocation.blockOffset, i * range / sample);
@@ -218,4 +184,4 @@ function createShader(source, isVertexShader) {
   //console.log(`${isVertexShader}: ${source}`);
   return shader;
 }
-
+},false);

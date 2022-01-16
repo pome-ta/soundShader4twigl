@@ -8,13 +8,13 @@ import {barVisualize} from './visualizar.js';
  * @class
  * @extends EventEmitter3
  */
-export class Onomat extends eventemitter3 {
-  //export class Onomat {
+//export class Onomat extends eventemitter3 {
+export class Onomat {
   /**
    * 発火するイベント
    * @type {Array.<string>}
    */
-  static get EVENT(){return ['build', 'play', 'stop'];}
+  //static get EVENT(){return ['build', 'play', 'stop'];}
   /**
    * analyser に指定する FFT サイズ
    * @type {number}
@@ -80,7 +80,7 @@ uniform float sampleRate;
    * @constructor
    */
   constructor(){
-    super();
+    //super();
 
     /**
      * WebGL 2.0 で初期化できたかどうか
@@ -173,10 +173,10 @@ uniform float sampleRate;
     this.barCanvas = document.querySelector('#barVisualizer');
 
     
-    /*
+    
     const wrap = document.querySelector('#wrap');
     wrap.appendChild(this.canvas);
-    */
+    
     
     this.canvas.width = Onomat.BUFFER_WIDTH;
     this.canvas.height = Onomat.BUFFER_HEIGHT;
@@ -247,8 +247,6 @@ uniform float sampleRate;
     const footer = this.outDirective(Onomat.FRAGMENT_SHADER_SOURCE_FOOTER);
     const fragment = `${header}\n${source}\n${footer}`;
     // シェーダをコンパイルしプログラムをリンク
-    
-    console.log(fragment);
     this.fs = this.createShader(fragment, false);
     if(this.fs == null || this.fs === false){return;}
     let program = this.gl.createProgram();
@@ -261,20 +259,24 @@ uniform float sampleRate;
       console.log('render');
       console.warn(msg);
       const t = getTimeString();
+      /*
       this.emit('build', {
         status: 'error',
         message: ` ● [ ${t} ] ${msg}`,
         source: source,
       });
+      */
       program = null;
       return;
     }else{
       const t = getTimeString();
+      /*
       this.emit('build', {
         status: 'success',
         message: ` ● [ ${t} ] shader compile succeeded`,
         source: source,
       });
+      */
     }
 
     if(draw !== true){return;}
@@ -333,7 +335,7 @@ uniform float sampleRate;
     if(this.isPlay === true){
       this.audioBufferSourceNode.stop();
       this.isPlay = false;
-      this.emit('stop');
+      //this.emit('stop');
     }
     // 再生のための準備と再生処理
     this.audioBufferSourceNode = this.audioCtx.createBufferSource();
@@ -351,12 +353,12 @@ uniform float sampleRate;
     this.audioBufferSourceNode.connect(this.audioAnalyserNode);
     this.audioAnalyserNode.connect(this.audioCtx.destination);
     this.audioBufferSourceNode.buffer = buffer;
-    console.log('buffer');
-    console.log(buffer);
+    //console.log('buffer');
+    //console.log(buffer);
     this.audioBufferSourceNode.loop = false;
     this.audioBufferSourceNode.start();
     this.isPlay = true;
-    this.emit('play');
+    //this.emit('play');
   }
 
   /**
@@ -390,7 +392,7 @@ uniform float sampleRate;
     if(this.isPlay === true){
       this.audioBufferSourceNode.stop();
       this.isPlay = false;
-      this.emit('stop');
+      //this.emit('stop');
     }
   }
 
@@ -410,11 +412,13 @@ uniform float sampleRate;
       console.log('createShader');
       console.warn(msg);
       const t = getTimeString();
+      /*
       this.emit('build', {
         status: 'error',
         message: ` ● [ ${t} ] ${msg}`,
         source: source,
       });
+      */
       return false;
     }
     //console.log(source);
