@@ -12,6 +12,7 @@ class View(ui.View):
   def __init__(self, *args, **kwargs):
     ui.View.__init__(self, *args, **kwargs)
     self.wv = wkwebview.WKWebView()
+    
     self.wv.load_url(str(uri), True)
     self.wv.flex = 'WH'
     self.add_subview(self.wv)

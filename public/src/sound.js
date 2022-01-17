@@ -1,7 +1,7 @@
 import {wavVisualize} from './visualizar.js';
 import {barVisualize} from './visualizar.js';
 
-
+console.log('out');
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE;
 const DURATION = 180;
@@ -74,14 +74,14 @@ class Sound {
     this.canvas.width = BUFFER_WIDTH;
     this.canvas.height = BUFFER_HEIGHT;
     
-    this.gl = canvas.getContext('webgl2');
-    this.vs = createShader(VERTEX_SHADER_SOURCE, true);
+    this.gl = this.canvas.getContext('webgl2');
+    this.vs = this.createShader(VERTEX_SHADER_SOURCE, true);
     
     this.audioCtx = new AudioContext();
   }
   
-  render(source, draw=false) {
-    this.fs = createShader(FRAGMENT_SHADER_SOURCE, false);
+  render(draw=false) {
+    this.fs = this.createShader(FRAGMENT_SHADER_SOURCE, false);
     let program = this.gl.createProgram();
     this.gl.attachShader(program, this.vs);
     this.gl.attachShader(program, this.fs);
@@ -191,7 +191,26 @@ class Sound {
 
 
 (() => {
-console.log('end');
+console.log('start');
+let mySound = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+console.log('DOMContentLoaded');
+  mySound = new Sound();
+  mySound.render(true);
+  
+  // 着火のおまじない
+  // xxx: 事前準備してるコードを走らせるので簡単に
+  const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
+  document.addEventListener(eventName, initAudioContext);
+  function initAudioContext(){
+    document.removeEventListener(eventName, initAudioContext);
+    // wake up AudioContext
+    mySound.audioCtx.resume();
+    //mySound.render(true);
+  }
+  
+}, false);
 })();
 
 
