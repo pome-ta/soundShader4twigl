@@ -2,6 +2,7 @@ import {wavVisualize} from './visualizar.js';
 import {barVisualize} from './visualizar.js';
 
 console.log('out');
+
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE;
 const DURATION = 180;
@@ -15,6 +16,7 @@ void main(){
   gl_Position = vec4(p, 1.0);
 }`;
 
+/*
 FRAGMENT_SHADER_SOURCE = `#version 300 es
 precision highp float;
 uniform float blockOffset;
@@ -38,7 +40,7 @@ void main(){
   outColor = vec4(XL.x, XH.x, XL.y, XH.y);
 }
 `;
-
+*/
 
 
 class Sound {
@@ -80,7 +82,8 @@ class Sound {
     this.audioCtx = new AudioContext();
   }
   
-  render(draw=false) {
+  render(source, draw=false) {
+    FRAGMENT_SHADER_SOURCE = source;
     this.fs = this.createShader(FRAGMENT_SHADER_SOURCE, false);
     let program = this.gl.createProgram();
     this.gl.attachShader(program, this.vs);
@@ -190,12 +193,39 @@ class Sound {
 }
 
 
-(() => {
+
 console.log('start');
 let mySound = null;
 
+
+const soundShader_path = new URL(`shader/sound.py`, location.protocol + '//' + location.host + location.pathname).href
+
+fetch(soundShader_path)
+  .then((res) => res.text())
+  .then((soundShader) => {
+    mySound = new Sound();
+    //console.log(soundShader);
+    mySound.render(soundShader, true);
+    document.addEventListener(eventName, initAudioContext);
+   });
+
+
+const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
+//document.addEventListener(eventName, initAudioContext);
+
+function initAudioContext(){
+  document.removeEventListener(eventName, initAudioContext);
+  // wake up AudioContext
+  //console.log('sound');
+  //console.log(mySound.isPlay);
+  mySound.audioCtx.resume();
+  //mySound.render(true);
+}
+
+
+/*
 window.addEventListener('DOMContentLoaded', () => {
-console.log('DOMContentLoaded');
+  console.log('DOMContentLoaded');
   mySound = new Sound();
   mySound.render(true);
   
@@ -206,12 +236,14 @@ console.log('DOMContentLoaded');
   function initAudioContext(){
     document.removeEventListener(eventName, initAudioContext);
     // wake up AudioContext
+    console.log('sound');
+    console.log(mySound.isPlay);
     mySound.audioCtx.resume();
     //mySound.render(true);
   }
   
 }, false);
-})();
-
+*/
+//})();
 
 
