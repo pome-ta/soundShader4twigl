@@ -1,6 +1,7 @@
 import {wavVisualize} from './visualizar.js';
 import {barVisualize} from './visualizar.js';
-window.addEventListener('DOMContentLoaded', () => {
+
+
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE;
 const DURATION = 180;
@@ -40,148 +41,158 @@ void main(){
 
 
 
-const canvas = document.createElement('canvas');
-
-const waveCanvas = document.querySelector('#waveVisualizer');
-const barCanvas = document.querySelector('#barVisualizer');
-
-const wrap = document.querySelector('#wrap');
-wrap.appendChild(canvas);
-
-canvas.width = BUFFER_WIDTH;
-canvas.height = BUFFER_HEIGHT;
-
-
-const gl = canvas.getContext('webgl2');
-const vs = createShader(VERTEX_SHADER_SOURCE, true);
-
-
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
-
-const fs = createShader(FRAGMENT_SHADER_SOURCE, false);
-
-let program = gl.createProgram();
-gl.attachShader(program, vs);
-gl.attachShader(program, fs);
-gl.linkProgram(program);
-gl.deleteShader(fs);
-
-
-if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-  let msg = gl.getProgramInfoLog(program);
-  console.log('render');
-  console.log(msg);
-  program = null;
-}
-
-
-if(program != null){gl.deleteProgram(program);}
-gl.useProgram(program);
-const attLocation = gl.getAttribLocation(program, 'p');
-
-const uniLocation = {
-  blockOffset: gl.getUniformLocation(program, 'blockOffset'),
-  sampleRate: gl.getUniformLocation(program, 'sampleRate'),
-};
-
-gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-gl.bufferData(
-  gl.ARRAY_BUFFER,
-  new Float32Array(
-    [-1.0,  1.0,  0.0, -1.0,
-     -1.0,  0.0,  1.0,  1.0,
-      0.0,  1.0, -1.0,  0.0]
-  ), gl.STATIC_DRAW);
-gl.enableVertexAttribArray(attLocation);
-gl.vertexAttribPointer(attLocation, 3, gl.FLOAT, false, 0, 0);
-gl.disable(gl.DEPTH_TEST);
-gl.disable(gl.CULL_FACE);
-gl.disable(gl.BLEND);
-gl.clearColor(0.0, 0.0, 0.0, 0.0);
-gl.clear(gl.COLOR_BUFFER_BIT);
-gl.viewport(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT);
-
-
-/* draw */
-// WebAudio 関係の初期設定
-const sample = audioCtx.sampleRate;
-const buffer = audioCtx.createBuffer(2, sample * DURATION, sample);
-
-const channelDataLeft  = buffer.getChannelData(0);
-const channelDataRight = buffer.getChannelData(1);
-const range = BUFFER_WIDTH * BUFFER_HEIGHT;
-const pixel = new Uint8Array(BUFFER_WIDTH * BUFFER_HEIGHT * 4);
-gl.uniform1f(uniLocation.sampleRate, sample);
-const block = Math.ceil((sample * DURATION) / range);
-
-for(let i = 0, j = block; i < j; ++i){
-  gl.uniform1f(uniLocation.blockOffset, i * range / sample);
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  gl.readPixels(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
-  for(let k = 0, l = range; k < l; ++k){
-    channelDataLeft[i * range + k]  = (pixel[k * 4 + 0] + 256 * pixel[k * 4 + 1]) / 65535 * 2 - 1;
-    channelDataRight[i * range + k] = (pixel[k * 4 + 2] + 256 * pixel[k * 4 + 3]) / 65535 * 2 - 1;
+class Sound {
+  constructor() {
+    this.canvas = null;
+    this.gl = null;
+    this.program = null;
+    this.vs = null;
+    this.fs = null;
+    this.attLocation = null;
+    this.uniLocation = null;
+    this.audioCtx = null;
+    this.audioBufferSourceNode = null;
+    this.audioAnalyserNode = null;
+    this.audioFrequencyBinCount = 0;
+    this.isPlay = false;
+    
+    this.waveCanvas = null;
+    this.barCanvas = null;
+    
+    this.init();
   }
-}
-
-
-
-// 再生のための準備と再生処理
-const audioBufferSourceNode = audioCtx.createBufferSource();
-const audioAnalyserNode = audioCtx.createAnalyser();
-audioAnalyserNode.smoothingTimeConstant = 0.8;
-audioAnalyserNode.fftSize = FFT_SIZE * 2;
-const audioFrequencyBinCount = audioAnalyserNode.frequencyBinCount;
-
-
-audioAnalyserNode.minDecibels = -90;
-audioAnalyserNode.maxDecibels = -10;
-    wavVisualize(waveCanvas, audioAnalyserNode);
-    barVisualize(barCanvas, audioAnalyserNode);
-
-audioBufferSourceNode.connect(audioAnalyserNode);
-audioAnalyserNode.connect(audioCtx.destination);
-audioBufferSourceNode.buffer = buffer;
-
-//console.log(buffer);
-audioBufferSourceNode.loop = false;
-audioBufferSourceNode.start();
-
-
-// 着火のおまじない
   
-const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
-document.addEventListener(eventName, initAudioContext);
-function initAudioContext(){
-  document.removeEventListener(eventName, initAudioContext);
-  // wake up AudioContext
-  audioCtx.resume();
-  //audioBufferSourceNode.start();
-}
-
-
-console.log('end');
-
-/**
- * シェーダオブジェクトのコンパイル
- * @param {string} source - シェーダのソースコード
- * @param {boolean} isVertexShader - 頂点シェーダかどうか
- * @return {WebGLShader}
- */
-
-function createShader(source, isVertexShader) {
-  const type = isVertexShader === true ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER;
-  const shader = gl.createShader(type);
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)){
-    let msg = gl.getShaderInfoLog(shader);
-    console.log('createShader');
-    console.log(msg);
-    return false;
+  init() {
+    this.canvas = document.createElement('canvas');
+    
+    this.waveCanvas = document.querySelector('#waveVisualizer');
+    this.barCanvas = document.querySelector('#barVisualizer');
+    
+    const wrap = document.querySelector('#wrap');
+    wrap.appendChild(this.canvas);
+    
+    this.canvas.width = BUFFER_WIDTH;
+    this.canvas.height = BUFFER_HEIGHT;
+    
+    this.gl = canvas.getContext('webgl2');
+    this.vs = createShader(VERTEX_SHADER_SOURCE, true);
+    
+    this.audioCtx = new AudioContext();
   }
-  //console.log(`${isVertexShader}: ${source}`);
-  return shader;
+  
+  render(source, draw=false) {
+    this.fs = createShader(FRAGMENT_SHADER_SOURCE, false);
+    let program = this.gl.createProgram();
+    this.gl.attachShader(program, this.vs);
+    this.gl.attachShader(program, this.fs);
+    this.gl.linkProgram(program);
+    this.gl.deleteShader(this.fs);
+    
+    if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+      let msg = this.gl.getProgramInfoLog(program);
+      console.log('render');
+      console.log(msg);
+      program = null;
+      return;
+    }
+    
+    if(draw !== true){return;}
+    if(this.program != null) {
+      this.gl.deleteProgram(this.program);
+    }
+    this.program = program;
+    this.gl.useProgram(this.program);
+    this.attLocation = this.gl.getAttribLocation(this.program, 'p');
+    
+    this.uniLocation = {
+      blockOffset: this.gl.getUniformLocation(this.program, 'blockOffset'),
+      sampleRate: this.gl.getUniformLocation(this.program, 'sampleRate'),
+    };
+    
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.gl.createBuffer());
+    this.gl.bufferData(this.gl.ARRAY_BUFFER,
+      new Float32Array(
+        [-1.0,  1.0,  0.0, -1.0,
+         -1.0,  0.0,  1.0,  1.0,
+          0.0,  1.0, -1.0,  0.0]),
+      this.gl.STATIC_DRAW);
+    this.gl.enableVertexAttribArray(this.attLocation);
+    this.gl.vertexAttribPointer(this.attLocation, 3, this.gl.FLOAT, false, 0, 0);
+    
+    this.gl.disable(this.gl.DEPTH_TEST);
+    this.gl.disable(this.gl.CULL_FACE);
+    this.gl.disable(this.gl.BLEND);
+    this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.gl.viewport(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT);
+    
+    this.draw();
+  }
+  
+  draw() {
+    const sample = this.audioCtx.sampleRate;
+    const buffer = this.audioCtx.createBuffer(2, sample * DURATION, sample);
+    
+    const channelDataLeft  = buffer.getChannelData(0);
+    const channelDataRight = buffer.getChannelData(1);
+    const range = BUFFER_WIDTH * BUFFER_HEIGHT;
+    const pixel = new Uint8Array(BUFFER_WIDTH * BUFFER_HEIGHT * 4);
+    
+    this.gl.uniform1f(this.uniLocation.sampleRate, sample);
+    const block = Math.ceil((sample * DURATION) / range);
+    for(let i = 0, j = block; i < j; ++i){
+      this.gl.uniform1f(this.uniLocation.blockOffset, i * range / sample);
+      this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+      this.gl.readPixels(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixel);
+      for(let k = 0, l = range; k < l; ++k){
+        channelDataLeft[i * range + k]  = (pixel[k * 4 + 0] + 256 * pixel[k * 4 + 1]) / 65535 * 2 - 1;
+        channelDataRight[i * range + k] = (pixel[k * 4 + 2] + 256 * pixel[k * 4 + 3]) / 65535 * 2 - 1;
+      }
+    }
+    
+    if(this.isPlay === true){
+      this.audioBufferSourceNode.stop();
+      this.isPlay = false;
+    }
+    
+    this.audioBufferSourceNode = this.audioCtx.createBufferSource();
+    this.audioAnalyserNode = this.audioCtx.createAnalyser();
+    this.audioAnalyserNode.smoothingTimeConstant = 0.8;
+    this.audioAnalyserNode.fftSize = FFT_SIZE * 2;
+    this.audioFrequencyBinCount = this.audioAnalyserNode.frequencyBinCount;
+    
+    this.audioAnalyserNode.minDecibels = -90;
+    this.audioAnalyserNode.maxDecibels = -10;
+    wavVisualize(this.waveCanvas, this.audioAnalyserNode);
+    barVisualize(this.barCanvas, this.audioAnalyserNode);
+    
+    this.audioBufferSourceNode.connect(this.audioAnalyserNode);
+    this.audioAnalyserNode.connect(this.audioCtx.destination);
+    this.audioBufferSourceNode.buffer = buffer;
+    this.audioBufferSourceNode.loop = false;
+    this.audioBufferSourceNode.start();
+    this.isPlay = true;
+  }
+  
+  createShader(source, isVertexShader){
+    const type = isVertexShader === true ? this.gl.VERTEX_SHADER : this.gl.FRAGMENT_SHADER;
+    const shader = this.gl.createShader(type);
+    this.gl.shaderSource(shader, source);
+    this.gl.compileShader(shader);
+    if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
+      let msg = this.gl.getShaderInfoLog(shader);
+      console.log('createShader');
+      console.warn(msg);
+      return false;
+    }
+    return shader;
+  }
 }
-},false);
+
+
+(() => {
+console.log('end');
+})();
+
+
+
