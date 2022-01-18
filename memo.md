@@ -4,6 +4,9 @@
 連続でjs 読んじゃうから、delegate でクラッシュさせてる😇
 
 
+[GLSLで音を作る | らくとあいすの備忘録](https://raku-phys.hatenablog.com/entry/2020/04/19/002400)
+
+
 # 📝 2022/01/16
 
 
