@@ -35,7 +35,7 @@ class View(ui.View):
     #self.wv = wkwebview.WKWebView()
     self.present(style='fullscreen', orientations=['portrait'])
 
-    self.wv.load_url(str(uri), True)
+    self.wv.load_url(str(uri))
     #self.wv.flex = 'WH'
     self.add_subview(self.wv)
     
