@@ -70,8 +70,8 @@ class Sound {
     this.waveCanvas = document.querySelector('#waveVisualizer');
     this.barCanvas = document.querySelector('#barVisualizer');
     
-    const wrap = document.querySelector('#wrap');
-    wrap.appendChild(this.canvas);
+    //const wrap = document.querySelector('#wrap');
+    //wrap.appendChild(this.canvas);
     
     this.canvas.width = BUFFER_WIDTH;
     this.canvas.height = BUFFER_HEIGHT;

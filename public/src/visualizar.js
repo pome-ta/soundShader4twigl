@@ -1,4 +1,4 @@
-const setting_height = 8;
+const setting_height = 2;
 
 export function wavVisualize(canvasTag, analyze) {
   const vcctx = canvasTag.getContext("2d");
@@ -21,10 +21,12 @@ export function wavVisualize(canvasTag, analyze) {
     requestAnimationFrame(draw);
     wavAnalyze.getByteTimeDomainData(dataArray);
 
-    vcctx.fillStyle = 'rgb(233, 233, 233)';
+    //vcctx.fillStyle = 'rgb(233, 233, 233)';
+    vcctx.fillStyle = 'rgb(35, 35, 35)';
     vcctx.fillRect(0, 0, WIDTH, HEIGHT);
     vcctx.lineWidth = 1;
-    vcctx.strokeStyle = 'rgb(35, 35, 35)';
+    //vcctx.strokeStyle = 'rgb(35, 35, 35)';
+    vcctx.strokeStyle = 'rgb(233, 233, 233)';
     vcctx.beginPath();
     const sliceWidth = WIDTH * 1.0 / bufferLength;
 
@@ -65,7 +67,8 @@ export function barVisualize(canvasTag, analyze) {
     
     barAnalyze.getByteFrequencyData(dataArrayAlt);
     
-    vcctx.fillStyle = 'rgb(233, 233, 233)';
+    //vcctx.fillStyle = 'rgb(233, 233, 233)';
+    vcctx.fillStyle = 'rgb(35, 35, 35)';
     vcctx.fillRect(0, 0, WIDTH, HEIGHT);
     
     const barWidth = (WIDTH / bufferLengthAlt) * 2.5;
@@ -75,7 +78,8 @@ export function barVisualize(canvasTag, analyze) {
 
     for (let i = 0; i < bufferLengthAlt; i++) {
       barHeight = dataArrayAlt[i];
-      vcctx.fillStyle = `rgb(${barHeight+64}, 64, 64)`;
+      //vcctx.fillStyle = `rgb(${barHeight+64}, 64, 64)`;
+      vcctx.fillStyle = `rgb(${barHeight+35}, ${barHeight+35}, ${barHeight+35})`;
       vcctx.fillRect(x,HEIGHT-barHeight/setting_height,barWidth,barHeight/setting_height);
       x += barWidth + 1;
     }
