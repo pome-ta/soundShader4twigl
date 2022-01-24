@@ -1,3 +1,95 @@
+# 📝 2022/01/24
+
+## 音の作り方おべんきよ
+
+[GLSLで音を作る | らくとあいすの備忘録](https://raku-phys.hatenablog.com/entry/2020/04/19/002400)
+
+
+
+### 円周率
+
+
+手打ちが面倒なので、`acos(-1.0)`
+
+
+### 短音
+
+
+`exp(-f * time)` 指数減衰で、一音でおわらせてる。という理解
+
+
+
+### 和音
+
+
+``` .glsl
+vec2 mainSound(float time) {
+  float pi = acos(-1.0);
+  float pi2 = pi * 2.0;
+  float sine_wave = sin(pi2 * 440.0 * time);
+  float pitch5 = sin(pi2 * 440.0 * 1.5 * time);
+  return vec2(0.4 * (sine_wave + pitch5));
+}
+
+```
+
+`0.4 *` と、クリップを自身で調整するのが手間かもね
+
+`normalize` ,`length` でも想定の音とはかけ離れてる
+
+
+
+
+## Pythonista の初期呼び出し以降は、前の音が残ってしまう問題
+
+
+### 結果から
+
+``` .py
+def refresh_webview(self):
+    self.wv.clear_cache()
+    self.wv.reload()
+```
+
+呼び出し、更新、終了時。全てにおいてリフレッシュさせている
+
+
+`clear_cache()` が意図通りにクリアさせているかは、不明
+
+
+
+### 道のり
+
+#### `SFSafariViewController`
+
+`SFSafariViewController` にて、local server を立てるのは、console にログを吐くので却下
+
+
+ログが出てしまうと、強制的にview が変遷してしまい、更新のめんどくささがあった
+
+
+#### `WKWebView` を作り直す
+
+
+ミニマムで実装したところ、同様の現象があったため、当初使用の`WKWebView` で継続
+
+
+
+## インタラクティブな操作
+
+
+view をメインで出してしまうと、ソースコード更新の度にview を閉じる必要があったため`panel` にて出すことにした
+
+
+
+#### テストリポジトリ
+
+
+[draftPythonistaScripts](https://github.com/pome-ta/draftPythonistaScripts) に突っ込んでる
+
+
+
+
 # 📝 2022/01/18
 
 ローカルサーバーを立てて、`SFSafariViewController` で呼び出すことにしてみた
