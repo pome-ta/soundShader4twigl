@@ -37,6 +37,80 @@ vec2 mainSound(float time) {
 
 `normalize` ,`length` でも想定の音とはかけ離れてる
 
+なんか、良い関数ないかな？
+
+
+### エンベロープ
+
+``` .glsl
+vec2 mainSound(float time) {
+  float pi = acos(-1.0);
+  float pi2 = pi * 2.0;
+  float envelope = 4.0;
+  float sine_wave = sin(pi2 * 440.0 * time);
+  
+  return vec2(sine_wave * fract(envelope * time));
+}
+
+```
+
+`+` はふわっと、`-` は即立ち上がり
+
+`envelope` が大きいほど早い
+
+
+
+
+BPM で`1.0` が`60` か？
+
+`time` で取ってるからそりゃそうか、、、
+
+
+todo: 
+
+> powerで形を変形したfract、三項演算子で条件分岐したものなど様々なエンベロープを考えることが出来ます。
+
+
+### ノイズ
+
+
+``` .glsl
+vec2 mainSound(float time) {
+  return vec2(fract(sin(time * 1e3) * 1e6) - 0.5);
+}
+
+```
+
+``` .glsl
+vec2 mainSound(float time) {
+  float noise = fract(sin(time * 1e3) * 1e6) - 0.5;
+  
+  return vec2(noise * fract(-time * 8.0));
+}
+
+```
+
+
+ずっと鳴らしてると、モジュラーみたいな機械音的なのが乗る
+
+
+
+#### 組み合わせ
+
+``` .glsl
+vec2 mainSound(float time) {
+  return vec2((fract(sin(time * 1e3) * 1e6) - 0.5) * pow(fract(-time * 4.0), mod(time * 4.0, 2.0) * 8.0));
+}
+
+```
+
+
+
+
+todo:
+
+よくある、ノイズのやつ調べる
+
 
 
 
