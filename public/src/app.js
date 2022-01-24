@@ -1,218 +1,214 @@
-import {Fragmen} from './fragmen.js';
-import {Onomat} from './onomat.js';
+import {wavVisualize} from './visualizar.js';
+import {barVisualize} from './visualizar.js';
+
+console.log('out');
+
+let VERTEX_SHADER_SOURCE;
+//let FRAGMENT_SHADER_SOURCE;
+let FRAGMENT_SHADER_SOURCE_HEADER;
+let FRAGMENT_SHADER_SOURCE_FOOTER;
+const DURATION = 180;
+const BUFFER_WIDTH = 512;
+const BUFFER_HEIGHT = 512;
+const FFT_SIZE = 128;
+
+VERTEX_SHADER_SOURCE = `#version 300 es
+in vec3 p;
+void main(){
+  gl_Position = vec4(p, 1.0);
+}`;
+
+
+FRAGMENT_SHADER_SOURCE_HEADER = `#version 300 es
+precision highp float;
+uniform float blockOffset;
+uniform float sampleRate;
+
+out vec4 outColor;`;
+
+
+FRAGMENT_SHADER_SOURCE_FOOTER = `
+void main(){
+  float time = blockOffset + ((gl_FragCoord.x - 0.5) + (gl_FragCoord.y - 0.5) * 512.0) / sampleRate;
+  vec2 XY = mainSound(time);
+  vec2 XV = floor((0.5 + 0.5 * XY) * 65536.0);
+  vec2 XL = mod(XV, 256.0) / 255.0;
+  vec2 XH = floor(XV / 256.0) / 255.0;
+  outColor = vec4(XL.x, XH.x, XL.y, XH.y);
+}`;
+
+
+class Sound {
+  constructor() {
+    this.canvas = null;
+    this.gl = null;
+    this.program = null;
+    this.vs = null;
+    this.fs = null;
+    this.attLocation = null;
+    this.uniLocation = null;
+    this.audioCtx = null;
+    this.audioBufferSourceNode = null;
+    this.audioAnalyserNode = null;
+    this.audioFrequencyBinCount = 0;
+    this.isPlay = false;
+    
+    this.waveCanvas = null;
+    this.barCanvas = null;
+    
+    this.init();
+  }
+  
+  init() {
+    this.canvas = document.createElement('canvas');
+    
+    this.waveCanvas = document.querySelector('#waveVisualizer');
+    this.barCanvas = document.querySelector('#barVisualizer');
+    
+    //const wrap = document.querySelector('#wrap');
+    //wrap.appendChild(this.canvas);
+    
+    this.canvas.width = BUFFER_WIDTH;
+    this.canvas.height = BUFFER_HEIGHT;
+    
+    this.gl = this.canvas.getContext('webgl2');
+    this.vs = this.createShader(VERTEX_SHADER_SOURCE, true);
+    
+    this.audioCtx = new AudioContext();
+  }
+  
+  render(source, draw=false) {
+    const fragment = `${FRAGMENT_SHADER_SOURCE_HEADER}\n${source}\n${FRAGMENT_SHADER_SOURCE_FOOTER}`;
+    this.fs = this.createShader(fragment, false);
+    let program = this.gl.createProgram();
+    this.gl.attachShader(program, this.vs);
+    this.gl.attachShader(program, this.fs);
+    this.gl.linkProgram(program);
+    this.gl.deleteShader(this.fs);
+    
+    if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
+      let msg = this.gl.getProgramInfoLog(program);
+      console.log(msg);
+      program = null;
+      return;
+    }
+    
+    if(draw !== true){return;}
+    if(this.program != null) {
+      this.gl.deleteProgram(this.program);
+    }
+    this.program = program;
+    this.gl.useProgram(this.program);
+    this.attLocation = this.gl.getAttribLocation(this.program, 'p');
+    
+    this.uniLocation = {
+      blockOffset: this.gl.getUniformLocation(this.program, 'blockOffset'),
+      sampleRate: this.gl.getUniformLocation(this.program, 'sampleRate'),
+    };
+    
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.gl.createBuffer());
+    this.gl.bufferData(this.gl.ARRAY_BUFFER,
+      new Float32Array(
+        [-1.0,  1.0,  0.0, -1.0,
+         -1.0,  0.0,  1.0,  1.0,
+          0.0,  1.0, -1.0,  0.0]),
+      this.gl.STATIC_DRAW);
+    this.gl.enableVertexAttribArray(this.attLocation);
+    this.gl.vertexAttribPointer(this.attLocation, 3, this.gl.FLOAT, false, 0, 0);
+    
+    this.gl.disable(this.gl.DEPTH_TEST);
+    this.gl.disable(this.gl.CULL_FACE);
+    this.gl.disable(this.gl.BLEND);
+    this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.gl.viewport(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT);
+    
+    this.draw();
+  }
+  
+  draw() {
+    const sample = this.audioCtx.sampleRate;
+    const buffer = this.audioCtx.createBuffer(2, sample * DURATION, sample);
+    
+    const channelDataLeft  = buffer.getChannelData(0);
+    const channelDataRight = buffer.getChannelData(1);
+    const range = BUFFER_WIDTH * BUFFER_HEIGHT;
+    const pixel = new Uint8Array(BUFFER_WIDTH * BUFFER_HEIGHT * 4);
+    
+    this.gl.uniform1f(this.uniLocation.sampleRate, sample);
+    const block = Math.ceil((sample * DURATION) / range);
+    for(let i = 0, j = block; i < j; ++i){
+      this.gl.uniform1f(this.uniLocation.blockOffset, i * range / sample);
+      this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+      this.gl.readPixels(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixel);
+      for(let k = 0, l = range; k < l; ++k){
+        channelDataLeft[i * range + k]  = (pixel[k * 4 + 0] + 256 * pixel[k * 4 + 1]) / 65535 * 2 - 1;
+        channelDataRight[i * range + k] = (pixel[k * 4 + 2] + 256 * pixel[k * 4 + 3]) / 65535 * 2 - 1;
+      }
+    }
+    
+    if(this.isPlay === true){
+      this.audioBufferSourceNode.stop();
+      this.isPlay = false;
+    }
+    
+    this.audioBufferSourceNode = this.audioCtx.createBufferSource();
+    this.audioAnalyserNode = this.audioCtx.createAnalyser();
+    this.audioAnalyserNode.smoothingTimeConstant = 0.8;
+    this.audioAnalyserNode.fftSize = FFT_SIZE * 2;
+    this.audioFrequencyBinCount = this.audioAnalyserNode.frequencyBinCount;
+    
+    this.audioAnalyserNode.minDecibels = -90;
+    this.audioAnalyserNode.maxDecibels = -10;
+    wavVisualize(this.waveCanvas, this.audioAnalyserNode);
+    barVisualize(this.barCanvas, this.audioAnalyserNode);
+    
+    this.audioBufferSourceNode.connect(this.audioAnalyserNode);
+    this.audioAnalyserNode.connect(this.audioCtx.destination);
+    this.audioBufferSourceNode.buffer = buffer;
+    this.audioBufferSourceNode.loop = false;
+    this.audioBufferSourceNode.start();
+    this.isPlay = true;
+  }
+  
+  createShader(source, isVertexShader){
+    const type = isVertexShader === true ? this.gl.VERTEX_SHADER : this.gl.FRAGMENT_SHADER;
+    const shader = this.gl.createShader(type);
+    this.gl.shaderSource(shader, source);
+    this.gl.compileShader(shader);
+    if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
+      let msg = this.gl.getShaderInfoLog(shader);
+      console.log('createShader');
+      console.warn(msg);
+      return false;
+    }
+    return shader;
+  }
+}
+
 
 
 console.log('start');
+let mySound = null;
+
+const soundShader_path = new URL(`shader/sound.py`, location.protocol + '//' + location.host + location.pathname).href
+
+fetch(soundShader_path)
+  .then((res) => res.text())
+  .then((soundShader) => {
+    mySound = new Sound();
+    mySound.render(soundShader, true);
+    //document.addEventListener(eventName, initAudioContext);
+   });
 
 
+const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
+document.addEventListener(eventName, initAudioContext);
 
-
-(() => {
-let canvas = null;            // スクリーン
-let fragmen = null;           // fragmen.js のインスタンス
-let onomat = null;            // onomat.js のインスタンス
-let currentSource = '';       // 直近のソースコード
-let currentAudioSource = '';  // 直近の Sound Shader のソースコード
-
-let wrap = null; // html の一番ガワ
-
-
-// fragmen.js 用のオプションの雛形
-const FRAGMEN_OPTION = {
-  target: null,
-  eventTarget: null,
-  mouse: true,
-  resize: true,
-  escape: false
+function initAudioContext(){
+  document.removeEventListener(eventName, initAudioContext);
+  // todo: wake up AudioContext
+  mySound.audioCtx.resume();
 }
 
-
-window.addEventListener('DOMContentLoaded', () => {
-  console.log('DOMContentLoaded');
-  // DOM への参照
-  canvas = document.querySelector('#webgl');
-  wrap = document.querySelector('#wrap');
-
-  // fragmen からデフォルトのソース一覧を取得
-  const fragmenDefaultSource = Fragmen.DEFAULT_SOURCE;
-  // xxx: 無意味な渡し
-  currentSource = fragmenDefaultSource;
-  //currentSource = glShader;
-  
-  // audioToggle が checked ではないかサウンドシェーダのソースが空の場合既定のソースを利用する
-  // xxx: `audioToggle` は設定してない
-  if(currentAudioSource === ''){
-    currentAudioSource = Onomat.FRAGMENT_SHADER_SOURCE_DEFAULT;
-  }
-  
-  // todo: ユーザーアクションをしていないと（タップとか）音は出ない
-  onomatSetting(true);
-  //update(currentSource);
-  //counter.textContent = `${editor.getValue().length}`;
-  //audioCounter.textContent = `${audioEditor.getValue().length}`;
-
-
-/*
-  // ウィンドウのリサイズ時
-  window.addEventListener('resize', () => {
-    //console.log('resize');
-    resize();
-  }, false);
-  // 最初に一回リサイズ相当の処理を行っておく
-  resize();
-*/
-
-
-  // メインとなる fragmen のインスタンス
-  const option = Object.assign(FRAGMEN_OPTION, {
-    target: canvas,
-    eventTarget: window,
-  });
-  fragmen = new Fragmen(option);
-  fragmen.render(currentSource);
-  
-  console.log(currentAudioSource);
-  //updateAudio(currentAudioSource, true);
-  //updateAudio(currentAudioSource);
-  
-  // 着火のおまじない
-  // xxx: 事前準備してるコードを走らせるので簡単に
-  const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
-  document.addEventListener(eventName, initAudioContext);
-  function initAudioContext(){
-    document.removeEventListener(eventName, initAudioContext);
-    // wake up AudioContext
-    onomat.audioCtx.resume();
-  }
-  
-  // サウンドシェーダ関連
-  /*
-  wrap.addEventListener('change', () => {
-    onomatSetting();
-  }, false);
-  */
-  wrap.addEventListener('click', () => {
-    /*
-    if(audioToggle.checked !== true || latestAudioStatus !== 'success'){return;}
-    ++soundPlay;
-    */
-    console.log(onomat.isPlay);
-    //updateAudio(currentAudioSource, true);
-    
-    /*
-    // 配信中はステータスとは無関係に状態を送る
-    if(currentChannelId != null && (broadcastMode === 'owner' || broadcastMode === 'friend')){
-      // グラフィックスを編集する立場かどうか
-      if(
-        (broadcastMode === 'owner' && directionMode !== BROADCAST_DIRECTION.GRAPHICS) ||
-        (broadcastMode === 'friend' && directionMode === BROADCAST_DIRECTION.GRAPHICS)
-      ){
-        updateSoundData(currentDirectorId, currentChannelId, soundPlay);
-      }
-    }*/
-  }, false);
-  
-  wrap.addEventListener('click', () => {
-    /*
-    if(musician != null){musician.stop();}
-    if(audioToggle.checked !== true){return;}
-    */
-    //if(!onomat.isPlay){onomat.stop();}
-  }, false);
-  
-  
-}, false);
-
-
-
-/**
- * ウィンドウリサイズ時の処理
- */
-function resize(){
-  const canvas = document.querySelector('#webgl');
-  const bound = canvas.parentElement.getBoundingClientRect();
-  canvas.width = bound.width;
-  canvas.height = bound.height;
-  /*
-console.log('resize');
-console.log(canvas.width);
-console.log(canvas.height);
-*/
-}
-
-
-/**
- * シェーダのソースを更新
- */
-function update(source){
-  if(fragmen == null){return;}
-  fragmen.render(source);
-}
-
-
-/**
- * シェーダのソースを更新
- */
-function updateAudio(source, force){
-  if(onomat == null){return;}
-  onomat.render(source, force);
-}
-
-/**
- * audioToggle の状態によりエディタの表示・非表示を切り替え、場合により Onomat の初期化を行う
- * @param {boolean} [play=true] - そのまま再生まで行うかどうかのフラグ
- */
-function onomatSetting(play = true){
-  // onomat のインスタンスが既に存在するかどうか
-  if(onomat == null){
-    // 存在しない場合生成を試みる
-    onomat = new Onomat();
-    
-    // ビルド時のイベントを登録
-    
-    //onomat.on('build', (res) => {
-      /*
-      latestAudioStatus = res.status;
-      audioLineout.classList.remove('warn');
-      audioLineout.classList.remove('error');
-      audioLineout.classList.add(res.status);
-      audioMessage.textContent = res.message;
-      if(latestStatus === 'success' && latestAudioStatus === 'success'){
-        link.classList.remove('disabled');
-      }else{
-        link.classList.add('disabled');
-      }
-      */
-    //});
-    
-    // 再生まで行うよう引数で指定されている場合は再生処理をタイマーで登録
-    
-    if(play === true){
-      setTimeout(() => {
-        //updateAudio(audioEditor.getValue(), true);
-        updateAudio(currentAudioSource, true);
-      }, 500);
-    }
-    
-  }
-  /*
-  // 表示・非表示の切り替え
-  if(audioToggle.checked === true){
-    audioWrap.classList.remove('invisible');
-    audioPlayIcon.classList.remove('disabled');
-    audioStopIcon.classList.remove('disabled');
-  }else{
-    audioWrap.classList.add('invisible');
-    audioPlayIcon.classList.add('disabled');
-    audioStopIcon.classList.add('disabled');
-  }
-  
-  // エディタのスクロールがおかしくならないようにリサイズ処理を呼んでおく
-  editor.resize();
-  audioEditor.resize();
-  */
-}
-
-})();
-console.log('end');
 
