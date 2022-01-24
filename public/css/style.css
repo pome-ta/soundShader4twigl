@@ -23,9 +23,9 @@
 h1 {
   background: red;
 }
-/*
 
+/* todo: canvas に描画させたいけど、音変わる？ */
 canvas {
   width: 100%;
 }
-*/
+

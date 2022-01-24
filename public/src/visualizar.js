@@ -1,4 +1,4 @@
-const setting_height = 2;
+const setting_height = 2.5;
 
 export function wavVisualize(canvasTag, analyze) {
   const vcctx = canvasTag.getContext("2d");
