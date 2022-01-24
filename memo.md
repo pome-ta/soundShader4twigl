@@ -88,6 +88,22 @@ view をメインで出してしまうと、ソースコード更新の度にvie
 [draftPythonistaScripts](https://github.com/pome-ta/draftPythonistaScripts) に突っ込んでる
 
 
+## style
+
+はやり、Shader の情報が見たいので表示
+
+
+しかし、view からはみ出して、横スクロールが面倒なので
+
+``` .css
+canvas {
+  width: 100%;
+}
+```
+
+吐き出す音が変わらなければいいけど、、、(クソ耳の私では違いがわからんかったので、採用してる)
+
+
 
 
 # 📝 2022/01/18
