@@ -1,10 +1,3 @@
-#version 300 es
-precision highp float;
-uniform float blockOffset;
-uniform float sampleRate;
-
-out vec4 outColor;
-
 vec2 mainSound(float time){
   //return vec2(sin(6.2831*440.*time));
   //return vec2(sin(6.2831*440.*time)*exp(-3.*time));
@@ -20,13 +13,5 @@ vec2 mainSound(float time){
   
   return tan(hh + kik);
   
-}
-void main(){
-  float time = blockOffset + ((gl_FragCoord.x - 0.5) + (gl_FragCoord.y - 0.5) * 512.0) / sampleRate;
-  vec2 XY = mainSound(time);
-  vec2 XV = floor((0.5 + 0.5 * XY) * 65536.0);
-  vec2 XL = mod(XV, 256.0) / 255.0;
-  vec2 XH = floor(XV / 256.0) / 255.0;
-  outColor = vec4(XL.x, XH.x, XL.y, XH.y);
 }
 

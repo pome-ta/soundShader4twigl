@@ -4,7 +4,9 @@ import {barVisualize} from './visualizar.js';
 console.log('out');
 
 let VERTEX_SHADER_SOURCE;
-let FRAGMENT_SHADER_SOURCE;
+//let FRAGMENT_SHADER_SOURCE;
+let FRAGMENT_SHADER_SOURCE_HEADER;
+let FRAGMENT_SHADER_SOURCE_FOOTER;
 const DURATION = 180;
 const BUFFER_WIDTH = 512;
 const BUFFER_HEIGHT = 512;
@@ -16,21 +18,16 @@ void main(){
   gl_Position = vec4(p, 1.0);
 }`;
 
-/*
-FRAGMENT_SHADER_SOURCE = `#version 300 es
+
+FRAGMENT_SHADER_SOURCE_HEADER = `#version 300 es
 precision highp float;
 uniform float blockOffset;
 uniform float sampleRate;
 
-out vec4 outColor;
+out vec4 outColor;`;
 
-vec2 mainSound(float time){
-  //return vec2(sin(6.2831*440.*time));
-  //return vec2(sin(6.2831*440.*time)*exp(-3.*time));
-  //return vec2(sin(6.2831*440.*time)+sin(6.2831*440.*1.5*time));
-  //return vec2((fract(sin(time*1e3)*1e6)-.5)*pow(fract(-time*4.),mod(time*4.,2.)*8.));
-  return vec2(3.0*sin(3e2*time)*pow(fract(-time*2.),4.));
-}
+
+FRAGMENT_SHADER_SOURCE_FOOTER = `
 void main(){
   float time = blockOffset + ((gl_FragCoord.x - 0.5) + (gl_FragCoord.y - 0.5) * 512.0) / sampleRate;
   vec2 XY = mainSound(time);
@@ -38,9 +35,7 @@ void main(){
   vec2 XL = mod(XV, 256.0) / 255.0;
   vec2 XH = floor(XV / 256.0) / 255.0;
   outColor = vec4(XL.x, XH.x, XL.y, XH.y);
-}
-`;
-*/
+}`;
 
 
 class Sound {
@@ -83,8 +78,8 @@ class Sound {
   }
   
   render(source, draw=false) {
-    FRAGMENT_SHADER_SOURCE = source;
-    this.fs = this.createShader(FRAGMENT_SHADER_SOURCE, false);
+    const fragment = `${FRAGMENT_SHADER_SOURCE_HEADER}\n${source}\n${FRAGMENT_SHADER_SOURCE_FOOTER}`;
+    this.fs = this.createShader(fragment, false);
     let program = this.gl.createProgram();
     this.gl.attachShader(program, this.vs);
     this.gl.attachShader(program, this.fs);
@@ -93,7 +88,7 @@ class Sound {
     
     if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
       let msg = this.gl.getProgramInfoLog(program);
-      console.log('render');
+      //console.log('render');
       console.log(msg);
       program = null;
       return;
@@ -197,29 +192,24 @@ class Sound {
 console.log('start');
 let mySound = null;
 
-
 const soundShader_path = new URL(`shader/sound.py`, location.protocol + '//' + location.host + location.pathname).href
 
 fetch(soundShader_path)
   .then((res) => res.text())
   .then((soundShader) => {
     mySound = new Sound();
-    //console.log(soundShader);
     mySound.render(soundShader, true);
-    document.addEventListener(eventName, initAudioContext);
+    //document.addEventListener(eventName, initAudioContext);
    });
 
 
 const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
-//document.addEventListener(eventName, initAudioContext);
+document.addEventListener(eventName, initAudioContext);
 
 function initAudioContext(){
   document.removeEventListener(eventName, initAudioContext);
-  // wake up AudioContext
-  //console.log('sound');
-  //console.log(mySound.isPlay);
+  // todo: wake up AudioContext
   mySound.audioCtx.resume();
-  //mySound.render(true);
 }
 
 
