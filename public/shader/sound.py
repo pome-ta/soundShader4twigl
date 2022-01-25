@@ -10,7 +10,9 @@ vec2 mainSound(float time) {
   
   //return vec2(env440);
   //return vec2(wave440 * exp(-1.0 * abs(sin(time) * 4.0)));
-  return vec2(wave440);
+  //return vec2((sin(time * 5.0) * 0.7 + 0.3) + env440);
+  return vec2((sin(time * 5.0) * 0.7 + 0.3) + env440) * floor(mod(time, 2.0));
+  //return vec2(env440);
 }
 /*
 float fm(float time){
