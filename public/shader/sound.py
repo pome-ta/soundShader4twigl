@@ -1,14 +1,23 @@
+const float BPM = 60.0;
+const float PI = acos(-1.0);
+const float PI2 = PI * 2.0;
+
+float timeToBeat(float time) {
+  return time / 60.0 * BPM;
+}
+
+float sine(float freq, float time) {
+  return sin(freq * PI2 * time);
+}
+
+
 vec2 mainSound(float time) {
-  float pi = acos(-1.0);
-  float pi2 = pi * 2.0;
+  float beat = timeToBeat(time);
   
-  float tempo = abs(sin(time / 10.0));
+  float w88 = sin(PI2 * 880.0 * time) * fract(time / -4.0);
   
-  float wave44 = sin(pi2 * 440.0 * time);
-  float env44 = wave44 * mod(-time * 0.5, 0.25);
-  
-  float wave88 = sin(pi2 * 880.0 * time);
-  float env88 = wave88 * fract(time / -2.0);
-  
-  return vec2(env44, env88);
+  float freq = mod(beat, 4.0) >= 1.0 ? 440.0 : 0.0;
+  float amp = exp(-6.0 * fract(beat));
+  return vec2(0.4 * (sine(freq, time) * amp + w88));
+  //return vec2(w44 + w88 / amp);
 }
