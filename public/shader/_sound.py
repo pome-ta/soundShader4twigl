@@ -41,3 +41,31 @@ vec2 mainSound(float time){
   return 0.3*s;
 }*/
 
+
+
+
+/*
+vec2 mainSound(float time) {
+  float pi = acos(-1.0);
+  float pi2 = pi * 2.0;
+  float envelope = -1.0;
+  
+  float wave880 = sin(pi2 * 880.0 * time);
+  float env880 = wave880 * fract((envelope / 4.0) * time);
+  
+  float wave440 = sin(pi2 * 440.0 * time);
+  float env440 = wave440 * fract(envelope * time);
+  
+  //return vec2(env440);
+  //return vec2(wave440 * exp(-1.0 * abs(sin(time) * 4.0)));
+  //return vec2((sin(time * 5.0) * 0.7 + 0.3) + env440);
+  //return vec2((sin(time * 5.0) * 0.5 + 0.5) + env440) * floor(mod(time, 2.0));
+  
+  return vec2(wave440 * fract(envelope * abs(sin(time))));
+  //return vec2(mod(-time, wave440));
+  
+}
+
+
+
+*/
