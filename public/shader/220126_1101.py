@@ -14,11 +14,17 @@ float sine(float freq, float time) {
 vec2 mainSound(float time) {
   float beat = timeToBeat(time);
   
-  float w44 = sine(440.0, time) * exp(-8.0 * fract(beat));
+  float w = sin(PI2 * 440.0 * time);
   
-  float wave88 = sine(880.0, time) * smoothstep(0.5, 1.0, fract(time / -4.0 - 0.25));
   
-  float wave44 = mod(beat, 4.0) <= 3.0 ? w44 : 0.0;
+  float amp = exp(-100.0 * fract(beat));
   
-  return vec2(0.4 * (wave44 + wave88));
+  
+  float w44 = sine(440.0, time) * exp(-10.0 * fract(beat));
+  float w88 = sine(880.0, time) * exp(-1.0 * fract(beat));
+  
+  
+  float freq = mod(beat, 4.0) <= 3.0 ? w44 : w88;
+  
+  return vec2(w44);
 }
