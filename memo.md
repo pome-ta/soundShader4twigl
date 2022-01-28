@@ -1,3 +1,31 @@
+# 📝 2022/01/28
+
+## 参照をしていきたい一覧
+
+[gaz | Qiita](https://qiita.com/gaziya5)
+
+[Try & Error for Sound Program](https://gaziya.hateblo.jp/entry/2021/12/14/191629)
+
+
+- 感謝の気持ちを持って読み込む
+
+
+[GLSL Grapher](https://fordhurley.com/glsl-grapher/)
+
+- 実装したら、視覚的にヒントになりそう
+
+
+## 雑感
+
+シーケンスや、ピッチの部分への注力が多い印象
+
+音色の部分についても、考えていきたい
+
+
+あと、サイドチェインも
+
+
+
 # 📝 2022/01/25
 
 
