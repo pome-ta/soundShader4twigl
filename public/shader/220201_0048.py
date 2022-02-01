@@ -23,9 +23,9 @@ float triangle(float phase) {return 1.0 - 4.0 * abs(fract(phase) - 0.5);}
 float sine(float phase) {return sin(TAU * phase );}
 
 
-float random(float time) {
-  float rnd_x = sine(123.4 * time);
-  float rnd_y = sine(567.8 * time);
+float random(float t) {
+  float rnd_x = sine(123.4 * t);
+  float rnd_y = sine(567.8 * t);
   return _rnd(vec2(rnd_x, rnd_y)) - 0.5;
 }
 
@@ -39,12 +39,9 @@ float kick(float time) {
 
 
 
-vec2 hihat(float time) {
-  float amp = exp(-128.0 * time);
-  float s = amp * random(time * 1e2);
-  float rnd_x = 2.0 * sine(123.4 * time) -1.0;
-  float rnd_y = 2.0 * sine(567.8 * time) -1.0;
-  return vec2(s * sin(random(rnd_x)), s * random(rnd_y));
+float hihat(float time) {
+  float amp = exp(-48.0 * time);
+  return amp * random(time * 1e6);
 }
 
 
@@ -57,10 +54,10 @@ vec2 mainSound(float time) {
   
   float bd = kick(kickTime);
   
-  float hihTiming = mod(beat - 0.5, 0.5);
+  float hihTiming = mod(beat - 0.5, 1.0);
   float hihatTime = beatToTime(hihTiming);
   
-  vec2 hh = hihat(hihatTime);
+  float hh = hihat(hihatTime);
   
   
   float a2 = 110.0;

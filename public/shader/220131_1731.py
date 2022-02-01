@@ -1,4 +1,7 @@
-#define BPM 128.0
+uniform vec2 resolution;
+
+
+#define BPM 132.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
 
@@ -7,7 +10,7 @@ const float TAU = PI * 2.0;
 
 /* GLSL */
 // 2D Random
-float _rnd(in vec2 st) {
+float random (vec2 st) {
   return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
@@ -23,14 +26,6 @@ float triangle(float phase) {return 1.0 - 4.0 * abs(fract(phase) - 0.5);}
 float sine(float phase) {return sin(TAU * phase );}
 
 
-float random(float time) {
-  float rnd_x = sine(123.4 * time);
-  float rnd_y = sine(567.8 * time);
-  return _rnd(vec2(rnd_x, rnd_y)) - 0.5;
-}
-
-
-
 float kick(float time) {
   float amp = exp(-24.0 * time);
   float phase = 48.0 * time - 4.8 * exp(-48.0 * time);
@@ -39,16 +34,14 @@ float kick(float time) {
 
 
 
-vec2 hihat(float time) {
-  float amp = exp(-128.0 * time);
-  float s = amp * random(time * 1e2);
-  float rnd_x = 2.0 * sine(123.4 * time) -1.0;
-  float rnd_y = 2.0 * sine(567.8 * time) -1.0;
-  return vec2(s * sin(random(rnd_x)), s * random(rnd_y));
-}
-
 
 vec2 mainSound(float time) {
+  //vec2 st = gl_FragCoord.xy; // resolution.xy;
+  //vec2 st = gl_FragCoord.xy + vec2(time * 10.0);
+  //vec2 st = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y);
+  //vec2 st = gl_FragCoord.xy;
+  
+  
   float beat = timeToBeat(time);
   float tempo = sine((mod(beat, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(beat));
   
@@ -56,11 +49,6 @@ vec2 mainSound(float time) {
   float kickTime = beatToTime(kikTiming);
   
   float bd = kick(kickTime);
-  
-  float hihTiming = mod(beat - 0.5, 0.5);
-  float hihatTime = beatToTime(hihTiming);
-  
-  vec2 hh = hihat(hihatTime);
   
   
   float a2 = 110.0;
@@ -70,18 +58,13 @@ vec2 mainSound(float time) {
   
   vec2 st = gl_FragCoord.xy;
   
-  float wn1 = fract(sin(beat * 1e4) * 1e6) - 0.5;
-  float wn2 = fract(sin(beat * 1e3) * 1e6) - 0.5;
+  float wn = fract(sin(time * 1e3) * 1e6) - 0.5;
   
   
-  //float rnd = random(st);
-  float nnn = random(time);
+  float rnd = random(st);
   
   
   //return vec2(tempo, bd);
   //return vec2(bd+ wav);
-  //return vec2(clamp(nnn, -1.0, 1.0));
-  //return vec2(bd, tempo);
-  return vec2(bd + hh);
-  //return vec2(fract(sin(time*1e3)*1e6)-.5);
+  return vec2(wn + rnd);
 }
