@@ -1,4 +1,4 @@
-#define BPM 128.0
+#define BPM 123.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
 
@@ -37,15 +37,28 @@ float kick(float time) {
   return amp * sine( phase );
 }
 
-
+float snare(float time){
+  float s_amp = exp(-32.0 * time);
+  float s_phase = 4.0 * time - 32.0 * exp(-4.0 * time);
+  
+  float n_amp = exp(-48.0 * time);
+  float tic = n_amp * random(time * 1e2);
+  float rnd = 2.0 * sine(123.4 * time) -1.0;
+  float noize = tic * sin(random(rnd));
+  
+  return s_amp * sine(s_phase + noize);
+}
 
 vec2 hihat(float time) {
   float amp = exp(-128.0 * time);
-  float s = amp * random(time * 1e2);
+  float tic = amp * random(time * 1e2);
   float rnd_x = 2.0 * sine(123.4 * time) -1.0;
   float rnd_y = 2.0 * sine(567.8 * time) -1.0;
-  return vec2(s * sin(random(rnd_x)), s * random(rnd_y));
+  return vec2(tic * sin(random(rnd_x)), tic * random(rnd_y));
 }
+
+
+
 
 
 vec2 mainSound(float time) {
@@ -54,34 +67,31 @@ vec2 mainSound(float time) {
   
   float kikTiming = mod(beat, 16.0) <= 15.0 ? mod(beat, 1.0) : mod(beat, 0.5);
   float kickTime = beatToTime(kikTiming);
-  
   float bd = kick(kickTime);
+  
+  float snareTimig = mod(beat - 1.0, 2.0);
+  float snareTime = beatToTime(snareTimig);
+  float sn = snare(snareTime);
   
   float hihTiming = mod(beat - 0.5, 0.5);
   float hihatTime = beatToTime(hihTiming);
-  
   vec2 hh = hihat(hihatTime);
   
   
-  float a2 = 110.0;
-  float a3 = 220.0;
+  float chainTime = beatToTime(mod(beat, 1.0));
+  float kickchain = smoothstep(0.0, 0.75, chainTime);
   
-  float w = sine(a3 * time);
+  float bass_tone = mod(beat, 8.0) >= 7.5 ? 97.999:110.0;
+  float vib = 0.2 * sine(time * 0.75);
+  float bass1 = saw(bass_tone * time + vib) * kickchain;
+  float bass2 = sine(bass_tone * time) * kickchain;
   
-  vec2 st = gl_FragCoord.xy;
-  
-  float wn1 = fract(sin(beat * 1e4) * 1e6) - 0.5;
-  float wn2 = fract(sin(beat * 1e3) * 1e6) - 0.5;
-  
-  
-  //float rnd = random(st);
-  float nnn = random(time);
+  float bass = clamp(bass1 + bass2, -1.0, 1.0);
   
   
-  //return vec2(tempo, bd);
-  //return vec2(bd+ wav);
-  //return vec2(clamp(nnn, -1.0, 1.0));
-  //return vec2(bd, tempo);
-  return vec2(bd + hh);
-  //return vec2(fract(sin(time*1e3)*1e6)-.5);
+  
+  float mono_mix = clamp((1.28 * bd) + (0.8 * sn) + (0.3 * bass), -1.0, 1.0);
+  
+  
+  return vec2(mono_mix + hh);
 }
