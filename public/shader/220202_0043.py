@@ -97,5 +97,5 @@ vec2 mainSound(float time) {
   float mono_mix = clamp((bd) + (sn) + (hh), -1.0, 1.0);
   
   
-  return vec2(mono_mix);
+  return vec2(mono_mix, tempo);
 }

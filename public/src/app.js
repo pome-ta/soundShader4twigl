@@ -2,6 +2,8 @@ import { wavVisualize } from './visualizar.js';
 import { barVisualize } from './visualizar.js';
 
 
+
+
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE_HEADER;
 let FRAGMENT_SHADER_SOURCE_FOOTER;
@@ -59,10 +61,10 @@ class Sound {
 
   init() {
     this.canvas = document.createElement('canvas');
-
+    
     this.waveCanvas = document.querySelector('#waveVisualizer');
     this.barCanvas = document.querySelector('#barVisualizer');
-
+    
     const wrap = document.querySelector('#wrap');
     wrap.appendChild(this.canvas);
 
@@ -159,9 +161,9 @@ class Sound {
 
     this.audioAnalyserNode.minDecibels = -90;
     this.audioAnalyserNode.maxDecibels = -10;
+    
     wavVisualize(this.waveCanvas, this.audioAnalyserNode);
     barVisualize(this.barCanvas, this.audioAnalyserNode);
-
     this.audioBufferSourceNode.connect(this.audioAnalyserNode);
     this.audioAnalyserNode.connect(this.audioCtx.destination);
     this.audioBufferSourceNode.buffer = buffer;
