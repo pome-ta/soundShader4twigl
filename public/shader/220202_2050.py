@@ -77,12 +77,12 @@ vec2 mainSound(float time) {
   float beat = timeToBeat(time);
   float tempo = sine((mod(beat, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(beat));
   
+  float w = sine(220.0 * time);
+  //float tic = fract(-0.25 * beat);
+  float tic = beatToTime(mod(beat, 2.0));
   
-  float vib = 0.1 * sine(time * 1e3);
-  float w = square(440.0 * time + vib);
   
-  
-  
-  return vec2(tempo, w);
+  return vec2(w * adsr(tic, 1.0, 0.5, 1.0, 0.5, 1.0), tempo);
+  //return vec2(w * tic, tempo);
   
 }
