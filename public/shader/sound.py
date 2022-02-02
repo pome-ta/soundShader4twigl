@@ -92,6 +92,8 @@ vec2 mainSound(float time) {
   
   float bass = clamp(bass1 + bass2, -1.0, 1.0);
   
+  
+  
 
   //float mono_mix = clamp((1.28 * bd) + (0.8 * sn) + (0.3 * bass), -1.0, 1.0);
   float mono_mix = clamp((bd) + (sn) + (hh), -1.0, 1.0);

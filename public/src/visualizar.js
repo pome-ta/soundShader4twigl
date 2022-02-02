@@ -10,7 +10,7 @@ export function wavVisualize(canvasTag, analyze) {
 
   const wavAnalyze = analyze;
 
-  //wavAnalyze.fftSize = 2048;
+  wavAnalyze.fftSize = 2048;
   //wavAnalyze.fftSize = 512;
   const bufferLength = wavAnalyze.fftSize;
   const dataArray = new Uint8Array(bufferLength);
@@ -74,12 +74,14 @@ export function barVisualize(canvasTag, analyze) {
     const barWidth = (WIDTH / bufferLengthAlt) * 2.5;
     //const barWidth = WIDTH / dataArrayLength;
     let barHeight;
+    //console.log(dataArrayLength);
     
     let x = 0;
     for (let i = 0; i < dataArrayLength; i++) {
       barHeight = dataArrayAlt[i];
+      // xxx: 数値適当
       const r = barHeight + 25 * (i / dataArrayLength);
-      const g = 250 * (i / dataArrayLength);
+      const g = 512 * (i / dataArrayLength);
       const b = 50;
       //vcctx.fillStyle = `rgb(${barHeight+64}, 64, 64)`;
       //vcctx.fillStyle = `rgb(${barHeight + 35}, ${barHeight + 35}, ${barHeight + 35})`;
