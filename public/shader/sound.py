@@ -46,6 +46,7 @@ vec2 mainSound(float time) {
   float s = sin(beat);
   
   return vec2(abs(s));
+  //return vec2(tempo);
 }
 
 

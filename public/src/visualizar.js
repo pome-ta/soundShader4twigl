@@ -15,6 +15,8 @@ export function wavVisualize(canvasTag, analyze) {
   const bufferLength = wavAnalyze.fftSize;
   const dataArray = new Uint8Array(bufferLength);
   vcctx.clearRect(0, 0, WIDTH, HEIGHT);
+  console.log(dataArray.length);
+
 
   draw();
   function draw() {
@@ -32,9 +34,10 @@ export function wavVisualize(canvasTag, analyze) {
 
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
-      const v = dataArray[i] / 128.0;
+      const v = (255 - dataArray[i]) / 128.0;
+      //const v = dataArray[i] / 128.0;
       const y = v * HEIGHT / 2;
-      console.log(y);
+
       // todo: ショートハンドすぎる？
       i === 0 ? vcctx.moveTo(x, y) : vcctx.lineTo(x, y);
       x += sliceWidth;
@@ -94,6 +97,3 @@ export function barVisualize(canvasTag, analyze) {
     }
   };
 }
-
-
-
