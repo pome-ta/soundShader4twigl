@@ -40,13 +40,14 @@ vec2 mainSound(float time) {
   float beat = timeToBeat(time);
   float tempo = sine((mod(beat, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(beat));
   
-  //float w = sine(440.0 * time) * pow(fract(-beat / 4.0), 8.0);
-  float v = fract(beat);
-  float w = sine(440.0 * time) + v;
-  float s = sin(beat);
+  float m = mod(beat, 1.0);
+  float v = fract(beat / 4.0);
+  float w = sine(44.0 * time);
   
-  return vec2(abs(s));
-  //return vec2(tempo);
+  float mono = w + v;
+  
+  //return vec2(clamp(m, -1.0, 1.0), tempo);
+  return vec2(clamp(w * 32.0, -1.0, 1.0) / 2.0);
 }
 
 

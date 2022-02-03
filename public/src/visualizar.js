@@ -15,8 +15,6 @@ export function wavVisualize(canvasTag, analyze) {
   const bufferLength = wavAnalyze.fftSize;
   const dataArray = new Uint8Array(bufferLength);
   vcctx.clearRect(0, 0, WIDTH, HEIGHT);
-  console.log(dataArray.length);
-
 
   draw();
   function draw() {
