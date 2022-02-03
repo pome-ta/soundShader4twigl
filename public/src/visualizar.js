@@ -34,6 +34,7 @@ export function wavVisualize(canvasTag, analyze) {
     for (let i = 0; i < bufferLength; i++) {
       const v = dataArray[i] / 128.0;
       const y = v * HEIGHT / 2;
+      console.log(y);
       // todo: ショートハンドすぎる？
       i === 0 ? vcctx.moveTo(x, y) : vcctx.lineTo(x, y);
       x += sliceWidth;
