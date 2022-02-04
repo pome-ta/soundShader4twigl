@@ -1,4 +1,4 @@
-#define BPM 92.0
+#define BPM 90.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
 
@@ -34,17 +34,22 @@ vec2 mainSound(float time) {
   float beat = timeToBeat(time);
   float tempo = sine((mod(beat, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(beat));
   
-  float hz = 440.0;
+  float baseHZ = 55.0;
   
-  float pos_t = sine(hz * beatToTime(beat));
-  float neg_t = sine(-hz * beatToTime(beat));
-  float gate = mod(beat * 0.5, 4.0);
-  float w =  gate < 1.0? pos_t:
-             gate < 2.0? neg_t:
-             gate < 3.0? pos_t + pos_t:
-             gate < 4.0? pos_t + neg_t:
-             0.0;
-
+  float gate = mod(beat * 2.0, 8.0);
+  float tone = gate <= 1.0 ? baseHZ * cent(12.0):
+                 gate <= 1.8 ? 0.0:
+               gate <= 2.0 ? baseHZ * cent(12.0):
+                 gate <= 2.8 ? 0.0:
+               gate <= 3.0 ? baseHZ * cent(12.0):
+               gate <= 4.0 ? baseHZ * cent(12.0):
+               gate <= 5.0 ? baseHZ * cent(12.0):
+               gate <= 6.0 ? baseHZ * cent(12.0):
+                 gate <= 6.8 ? 0.0:
+               gate <= 7.0 ? baseHZ * cent(7.0):
+               gate < 8.0 ? 0.0: 0.0;
+  
+  float w = sine(tone * time);
   return vec2(w, tempo);
 }
 
