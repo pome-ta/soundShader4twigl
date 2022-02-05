@@ -34,15 +34,16 @@ vec2 mainSound(float time) {
   float beat = timeToBeat(time);
   float tempo = sine((mod(beat, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(beat));
   
-  float hz = 440.0;
+  float phz = 440.0;
+  float nhz = -11.0;
   
-  float pos_t = sine(hz * beatToTime(beat));
-  float neg_t = sine(-hz * beatToTime(beat));
+  float pos_t = square(phz * beatToTime(beat));
+  float neg_t = square(nhz * beatToTime(beat));
   float gate = mod(beat * 0.5, 4.0);
   float w =  gate < 1.0? pos_t:
              gate < 2.0? neg_t:
-             gate < 3.0? pos_t + pos_t:
-             gate < 4.0? pos_t + neg_t:
+             gate < 3.0? pos_t - pos_t:
+             gate < 4.0? pos_t - neg_t:
              0.0;
 
   return vec2(w, tempo);
