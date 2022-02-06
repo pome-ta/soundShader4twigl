@@ -13,31 +13,16 @@ float sine(float phase) {
 }
 
 
-float rhy(float time, float fade){
-  //return pow(fract(-time), 6.0 - fade * 3.0);
-  return pow(fract(-time), 6.0 - fade * 2.0);
-}
-vec2 delay(float time, float dt){
-  return exp(-1.0 * dt) * sin(TAU * 440.0 * beatToTime(time)) * 
-    vec2(rhy(time - dt * 0.3, dt),
-         rhy(time - dt * 0.5, dt));
-}
-
-
 
 vec2 mainSound(float time){
-  float beat = timeToBeat(time);
-  float tempo = sine((mod(beat, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(beat));
+  float bpm = timeToBeat(time);
+  float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
   
-  vec2 s;
-  float bb = beat / 2.0;
-  s += delay(bb, 0.0);
-  //s += delay(bb, 0.5);
-  s += delay(bb, 1.0);
-  s += delay(bb, 1.9);
-  s += delay(bb, 1.92);
-  s += delay(bb, 1.95);
-  //s += delay(bb, 2.5);
+  float tone = 440.0;
   
-  return 0.5 * s;
+  float bass_tone = sine(tone * fract(time));
+  
+  float s = bass_tone;
+  
+  return vec2(s);
 }
