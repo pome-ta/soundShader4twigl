@@ -26,23 +26,19 @@ vec2 hash12(float t){
   return fract((p3.xx + p3.zy) * p3.xz);
 }
 
-vec2 mainSound(float time) {
-  float bpm = timeToBeat(time);
-  float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
-  
+vec2 mainSound(float time){
+  vec2 o = vec2(0);
   //High & Harmonic
-  float hh_s = fm(time, 880.0, 1.0, 1.0) * exp(-time * 16.0);
+  //o += fm(time, 880.0, 1.0, 1.0) * exp(-time * 16.0);
   
   //Low & Harmonic
-  float lh_s = fm(time, 110.0, 1.0, 1.0) * exp(-time * 16.0);
+  o += fm(time, 110.0, 1.0, 1.0) * exp(-time * 16.0);
   
   //High Percussive
-  vec2 hp_s = (hash12(time * 1e4) -0.5) * exp(-time * 16.0);
+  //o += (hash12(time * 1e4) -0.5) * exp(-time * 16.0);
 
   //Low & Percussive
-  float lp_s = fm(time - 1.3 * exp(-time * 8.0), 15.0, 0.35, 0.71) * exp(-time * 16.0);
+  //o += fm(time - 1.3 * exp(-time * 8.0), 15.0, 0.35, 0.71) * exp(-time * 16.0);
   
-  float mono_mix = lh_s;
-  
-  return vec2(mono_mix);
+  return o;
 }

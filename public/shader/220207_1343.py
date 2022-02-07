@@ -1,3 +1,5 @@
+// https://raku-phys.hatenablog.com/entry/2020/05/22/204117
+
 #define pi2 6.2631
 #define bpm 118.0
 
