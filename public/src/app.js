@@ -17,6 +17,7 @@ void main(){
 }`;
 
 
+// xxx: 改行数から、エラーの行数を正しく表示させたい
 FRAGMENT_SHADER_SOURCE_HEADER = `#version 300 es
 precision highp float;
 uniform float blockOffset;
@@ -178,6 +179,7 @@ class Sound {
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
       let msg = this.gl.getShaderInfoLog(shader);
       console.log('createShader');
+      // xxx: ベストなエラー行数出したい
       console.warn(msg);
       return false;
     }
