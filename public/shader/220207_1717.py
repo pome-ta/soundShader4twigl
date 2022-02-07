@@ -1,4 +1,4 @@
-#define BPM 140.0
+#define BPM 90.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
 
@@ -37,23 +37,26 @@ vec2 mainSound(float time) {
   
   
   float[8] seq_line = float[](
-    0.0, -2.0, 0.0, -2.0,
-    0.0, -2.0, 0.0, 2.0
+    0.0, 7.0, 5.0, 10.0,
+    7.0, 3.0, 5.0, -2.0
   );
   
   float seq_time = mod(floor(bpm), 8.0);
-  float base_tone = 110.0;
-  float seq_freq = base_tone * calf(seq_line[int(seq_time)]);
+  float seq_freq = 440.0 * calf(seq_line[int(seq_time)]);
   
-  float gate = mod(bpm * 1.0, 8.0);
+  //High & Harmonic
+  float hh_s = fm(time, 880.0, 1.0, 1.0) * exp(-time * 16.0);
   
-  //float bass = fm(time, seq_freq, 1.0, 1.0) * exp(-time * 16.0);
-  //float bass = fm(time, seq_freq, 1.0, 1.0) * fract(-bpm);
-  float bass = bass_step(seq_freq, time);
+  //Low & Harmonic
+  float lh_s = fm(time, seq_freq, 1.0, 1.0) * exp(-time * 16.0);
   
+  //High Percussive
+  vec2 hp_s = (hash12(time * 1e4) -0.5) * exp(-time * 16.0);
 
+  //Low & Percussive
+  float lp_s = fm(time - 1.3 * exp(-time * 8.0), 15.0, 0.35, 0.71) * exp(-time * 16.0);
   
-  float mono_mix = bass;
+  float mono_mix = lh_s;
   
   return vec2(mono_mix);
 }
