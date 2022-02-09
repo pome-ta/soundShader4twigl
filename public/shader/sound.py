@@ -27,51 +27,20 @@ float saw(float phase) {
 }
 
 
-float drone(float time, float semitones[4]) {
+
+float square(float phase) {
   float s = 0.0;
-  const int VOICES = 4;
-  for (int i=0; i<4; i++) {
-    float f = pitch(-12.0 + semitones[i]);
-    const int UNISON = 4;
-    for (int u=0; u<UNISON; u++) {
-      float fu = float(u);
-      float new_f = f + fu * tan(fu);
-      s += saw(time * new_f) * (1.0 / float(UNISON)) * (1.0 / float(VOICES));
-      //s *= fract(-bpm / 16.0);
-    }
+  for (int k=1; k<8; k++) {
+    s += sin(TAU * (2.0 * float(k) - 1.0) * phase) / (2.0 * float(k) - 1.0);
   }
-  return s;
+  return (4.0 / PI) * s;
 }
+
 
 
 vec2 mainSound(float time){
   float bpm = timeToBeat(time);
   float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
   
-  
-  float s = 0.0;
-  float semitones[4];
-  semitones[0] = 0.0;
-  semitones[1] = 2.0;
-  semitones[2] = 7.0;
-  semitones[3] = 9.0;
-  /*
-  const int VOICES = 4;
-  for (int i=0; i<4; i++) {
-    float f = pitch(-12.0 + semitones[i]);
-    const int UNISON = 4;
-    for (int u=0; u<UNISON; u++) {
-      float fu = float(u);
-      float new_f = f + fu * tan(fu);
-      s += saw(time * new_f) * (1.0 / float(UNISON)) * (1.0 / float(VOICES));
-      //s *= fract(-bpm / 16.0);
-    }
-  }
-  */
-  s += drone(time, semitones);
-  
-  float f = sin(TAU * bpm * 8.0);
-  float bs = sin(TAU * 64.0 * time + (s / 2.0) + f) * pow(fract(-bpm / 2.0), 1.25);
-  
-  return vec2((s + bs) * 0.3);
+  return vec2(2.*sin(time));
 }
