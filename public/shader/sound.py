@@ -33,16 +33,17 @@ float square(float phase) {
   return (4.0 / PI) * s;
 }
 
-
+float kick_sine(float phase) {
+  return cos(TAU * phase);
+}
 
 vec2 mainSound(float time){
   float bpm = timeToBeat(time);
   float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
   
   
-  float p = abs(sin(bpm * TAU / 8.0)) / beatToTime(bpm);
+  float vib = 0.2 * tan(bpm * TAU * 8.0);
+  float s = kick_sine(pitch(0.0, 64.0) * time - vib) * fract(-bpm);
   
-  float s = sine(pitch(12.0 * p, 110.0) * time) * fract(-bpm);
-  
-  return vec2(s, tempo);
+  return vec2(s);
 }
