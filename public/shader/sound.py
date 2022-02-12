@@ -1,4 +1,4 @@
-#define BPM 90.0
+#define BPM 110.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
 
@@ -42,8 +42,8 @@ vec2 mainSound(float time){
   float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
   
   
-  float vib = 0.2 * tan(bpm * TAU * 8.0);
-  float s = kick_sine(pitch(0.0, 64.0) * time - vib) * fract(-bpm);
+  float vib = 0.5 * saw(bpm * 3.0);
+  float s = kick_sine(pitch(0.0, 64.0) * time + vib) * fract(-bpm);
   
   return vec2(s);
 }
