@@ -31,3 +31,5 @@ ios アプリのPythonista3 とplay.js
 ## シェーダーコード
 
 Pythonista で使いやすいため、`.py` で使用
+
+`.glsl` 等は、 Pythonista が読み込み面倒
