@@ -1,3 +1,5 @@
+/* FM */
+
 const float BPM = 140.0;
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
@@ -41,7 +43,7 @@ vec2 mainSound(float time) {
   float vib = 0.2 * sine((mod(beat, 4.0) <= 2.0 ? 0.0:beat) * 8.0);
   float freq440 = 440.0;
   float fm = 0.1 * sine(freq440 * time * 7.0);
-  float wave = sine(freq440 * time);
+  float wave = sine(freq440 * time + fm);
   
   
   
