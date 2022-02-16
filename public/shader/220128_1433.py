@@ -1,3 +1,5 @@
+/* BDサウンドテスト */
+
 const float BPM = 140.;
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
