@@ -1,6 +1,6 @@
 @charset "utf-8";
 @import url("./icons.css");
-/*@import url("./styleChecker.css");*/
+/* @import url("./styleChecker.css"); */
 
 * {
   margin: 0px;
@@ -15,6 +15,26 @@ body {
 #wrap {
   width: 100%;
   height: 100%;
+}
+
+#menu-area {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 4rem;
+}
+/* 
+.shader_label {
+  flex-grow: 1;
+}
+
+.video_play, .video_pause {
+  flex-grow: 0;
+}
+ */
+
+#codearea {
+  width: 100%;
 }
 
 /* todo: canvas に描画させたいけど、音変わる？ */

@@ -3,12 +3,12 @@
 .video_play {
   display: inline-block;
   position: relative;
-  width: 1em;
-  height: 1em;
+  width: 2rem;
+  height: 2rem;
   border: 0.05em solid currentColor;
   border-radius: 50%;
-  color: #000;
-  font-size: 200px;
+  color: #ababab;
+  font-size: 2rem;
 }
 .video_play::before {
   position: absolute;
@@ -26,12 +26,12 @@
 .video_pause {
   display: inline-block;
   position: relative;
-  width: 1em;
-  height: 1em;
+  width: 2rem;
+  height: 2rem;
   border: 0.05em solid currentColor;
   border-radius: 50%;
-  color: #000;
-  font-size: 200px;
+  color: #ababab;
+  font-size: 2rem;
 }
 .video_pause::before,
 .video_pause::after {
