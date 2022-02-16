@@ -1,3 +1,4 @@
+/* 四つ打ち */
 const float BPM = 118.;
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
@@ -23,7 +24,7 @@ vec2 mainSound(float time) {
   float kik2 = sine(64.0, time) * smoothstep(0.7, 1.0, fract(-beat));
   float kik = mix(kik1, kik2, 0.8);
   
-  float sn = (sine(880.0, time) + 1.02 * sine(330.0, time)) * step(0.98, fract(-beat / 2.0 - 0.5));
+  float sn = (sine(440.0, time) + 1.02 * sine(220.0, time)) * step(0.98, fract(-beat / 2.0 - 0.5));
   
   return vec2(0.64 * ((0.64 * hih) + (1.75 * kik) + (0.5 * sn)));
   
