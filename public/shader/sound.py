@@ -20,8 +20,6 @@ float kick(float time) {
 }
 
 
-
-
 vec2 mainSound(float time) {
   float beat = timeToBeat(time);
   float tempo = sine((mod(beat, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(beat));
@@ -36,7 +34,6 @@ vec2 mainSound(float time) {
   float a3 = 220.0;
   
   float w = sine(a3 * time);
-  
   
   //return vec2(tempo, bd);
   //return vec2(bd+ wav);
