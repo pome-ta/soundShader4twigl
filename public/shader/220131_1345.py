@@ -1,3 +1,4 @@
+/* bd bass */
 #define BPM 140.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
