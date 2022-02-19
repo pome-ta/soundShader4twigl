@@ -11,7 +11,6 @@ float sine(float phase) {
   return sin(TAU * phase);
 }
 
-
 float pitch(float p, float t) {
   return pow(2.0, p / 12.0) * t;
 }
@@ -32,6 +31,7 @@ float square(float phase) {
   return (4.0 / PI) * s;
 }
 
+
 float kick_sine(float phase) {
   return sin(TAU * phase);
 }
@@ -47,5 +47,4 @@ vec2 mainSound(float time){
   
   return vec2(s);
 }
-
 
