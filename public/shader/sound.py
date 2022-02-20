@@ -43,7 +43,8 @@ vec2 mainSound(float time){
   float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
   
   float s = kick_sine(pitch(0.0, 64.0) * time);
-  s *= mod(exp(fract(-bpm)), 1.0);
+  //s *= mod(exp(fract(-bpm)), 1.0);
+  s *= mod(-bpm, 8.0);
   
   
   return vec2(s);
