@@ -3,7 +3,7 @@ import pathlib
 
 import ui
 
-import pdbg
+#import pdbg
 
 sys.path.append(str(pathlib.Path.cwd()) + '/pythonista-webview')
 from wkwebview import WKWebView
