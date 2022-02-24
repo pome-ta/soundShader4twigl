@@ -1,6 +1,14 @@
-
+#define BPM 4.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
+
+/* sound common */
+float timeToBeat(float t) {return t / 60.0 * BPM;}
+float beatToTime(float b) {return b / BPM * 60.0;}
+
+float sine(float phase) {
+  return sin(TAU * phase);
+}
 
 float rand(vec2 co) {
   vec2 magic2 = vec2(12.9898, 78.233);
@@ -14,7 +22,8 @@ float calcHertz(float scale) {
 
 float bassDrum(float time) {
   float t = mod(time, 1.0) / 3.0 * 8.0;
-  return sin(time * (440.0)) * max(0.0, 1.0 - fract(t) * 8.0);
+  //return sin(time * (440.0)) * max(0.0, 1.0 - fract(t) * 8.0);
+  return tan(time * (4400.0)) * max(0.0, 1.0 - fract(t) * 16.0);
 }
 
 float snereDrum(float time) {
@@ -77,12 +86,16 @@ float bass(float time) {
 }
 
 vec2 mainSound(float time) {
+  float bpm = timeToBeat(time);
+  float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
+  
   float sound = 0.0;
-  sound += bassDrum(time) * 0.5;
-  sound += snereDrum(time) * 0.5;
-  sound += hiHat(time) * 0.5;
-  sound += strings(time) * 0.2;
-  sound += bass(time) * 0.2;
+  sound += bassDrum(bpm) * 0.5;
+  sound += snereDrum(bpm) * 0.5;
+  sound += hiHat(bpm) * 0.5;
+  sound += strings(bpm) * 0.2;
+  sound += bass(bpm) * 0.2;
+  sound += tempo;
   
   if (abs(sound) > 1.0) sound /= abs(sound);
   return vec2(sound);
