@@ -9,13 +9,6 @@ float beatToTime(float b) {return b / BPM * 60.0;}
 float sine(float phase) {
   return sin(TAU * phase);
 }
-float saw(float phase) {
-  return 2.0 * fract(phase) - 1.0;
-}
-
-float kick_sine(float phase) {
-  return cos(TAU * phase);
-}
 
 
 float rand(vec2 st) {
@@ -31,12 +24,22 @@ float calcHertz(float scale) {
 }
 
 float bassDrum(float beat) {
-  float bd = 0.0;
-  float t = mod(beat / 4.0, 2.0) / 3.0 * 8.0;
-  float vib = 0.5 * sine(beat * 4.0);
-  bd += kick_sine(beatToTime(beat) * 64.0 + vib);
-  return bd * max(0.0, 1.0 - fract(t) * 4.8);
+  /*'''
+  float t = mod(time, 1.0) / 3.0 * 8.0;
+  return sin(time * (440.0)) * max(0.0, 1.0 - fract(t) * 8.0);
+  '''*/
+  float t = mod(beat / 2.0, 1.0) / 3.0 * 8.0;
+  float bd = sin(beatToTime(beat) * 440.0);
+  //return bd * max(0.0, 1.0 - fract(t) * 2.0);
+  return  bd * fract(-t);
 }
+
+float bbassDrum(float time) {
+  //float t = mod(time, 1.0) / 3.0 * 8.0;
+  float t = mod(time, 1.0);
+  return sin(time * (440.0)) * max(0.0, 1.0 - fract(t) * 8.0);
+}
+
 
 
 float snereDrum(float time) {
@@ -45,11 +48,10 @@ float snereDrum(float time) {
 }
 
 float hiHat(float time) {
-  float t = time * 4.0;
-  /*'''
+  float t = time * 16.0;
   if (mod(t, 16.0) > 3.0 && mod(t, 2.0) > 1.0) {
     return 0.0;
-  }'''*/
+  }
   return rand(vec2(time * 32.0, 0.0)) * max(0.0, 1.0 - fract(t) * 4.0);
 }
 
@@ -106,13 +108,15 @@ vec2 mainSound(float time) {
   
   float sound = 0.0;
   sound += bassDrum(bpm) * 0.5;
+  //sound += bbassDrum(time) * 0.5;
   //sound += snereDrum(bpm) * 0.5;
   //sound += hiHat(bpm) * 0.5;
   //sound += strings(bpm) * 0.2;
   //sound += bass(bpm) * 0.2;
-  //sound += tempo;
+  sound += tempo;
   
   if (abs(sound) > 1.0) sound /= abs(sound);
+  
   return vec2(sound);
 }
 
