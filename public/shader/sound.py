@@ -1,7 +1,7 @@
 // シェーダー空手のやつ
 //# https://thebookofshaders.com/05/kynd.png
 
-#define BPM 30.0
+#define BPM 90.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
 
@@ -37,13 +37,23 @@ vec2 mainSound(float time) {
   
   //env = 1.0 - pow(abs(s), 0.5);
   //env = 1.0 - pow(abs(s), 1.0);
-  env = 1.0 - pow(abs(s), 3.5);
+  //env = 1.0 - pow(abs(s), 3.5);
   
+  //env = pow(cos(PI * s / 2.0), 0.5);
+  //env = pow(cos(PI * s / 2.0), 1.0);
+  //env = pow(cos(PI * s / 2.0), 3.5);
   
+  //env = 1.0 - pow(abs(sin(PI * s / 2.0)), 0.5);
+  //env = 1.0 - pow(abs(sin(PI * s / 2.0)), 1.0);
+  //env = 1.0 - pow(abs(sin(PI * s / 2.0)), 3.5);
   
+  //env = pow(min(cos(PI * s / 2.0), 1.0 - abs(s)), 0.5);
+  //env = pow(min(cos(PI * s / 2.0), 1.0 - abs(s)), 1.0);
+  //env = pow(min(cos(PI * s / 2.0), 1.0 - abs(s)), 3.5);
   
-  
-  //float env = pow(cos(PI * s / 2.0), 0.5);
+  env = 1.0 - pow(max(0.0, abs(s) * 2.0 - 1.0), 0.5);
+  //env = 1.0 - pow(max(0.0, abs(s) * 2.0 - 1.0), 1.0);
+  //env = 1.0 - pow(max(0.0, abs(s) * 2.0 - 1.0), 3.5);
   
   sound += tone * env;
   sound += tempo;
