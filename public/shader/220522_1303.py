@@ -46,7 +46,8 @@ float hiHat(float beat) {
 
 
 float rect(float beat) {
-  if (fract(beat / PI / 2.0) < 0.5) {
+  //#if (fract(beat / PI / 2.0) < 0.5) {
+  if (fract(beat / TAU) < 0.5) {
     return 1.0;  
   } else {
     return 0.0;
@@ -68,7 +69,7 @@ float strings(float beat) {
     sound += rect(beatToTime(beat) * calcHertz(30.0));
     sound += rect(beatToTime(beat) * calcHertz(33.0));
   }
-  return sound * max(0.0, (1.0 - t * 2.0));
+  return sound * max(0.0, (1.0 - fract(-tb * 2.0) * 2.0));
 }
 
 float bass(float beat) {
@@ -88,7 +89,17 @@ float bass(float beat) {
   if (t < 8.0) {
     return rect(beatToTime(beat) * calcHertz(-1.0));
   }
+  
   return 0.0;
+}
+
+
+float gate(float beat) {
+  if (fract(beat) < 0.5) {
+    return 1.0;  
+  } else {
+    return 0.0;
+  }
 }
 
 vec2 mainSound(float time) {
@@ -97,14 +108,20 @@ vec2 mainSound(float time) {
   float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
   
   float sound = 0.0;
-  sound += bassDrum(bpm) * 0.6;
-  //sound += snereDrum(bpm) * 0.5;
+  sound += bassDrum(bpm) * 0.8;
+  sound += snereDrum(bpm) * 0.5;
   sound += hiHat(bpm) * 0.4;
-  //sound += strings(bpm) * 0.125;
-  //sound += bass(bpm) * 0.2;
+  sound += strings(bpm) * 0.125;
+  sound += bass(bpm) * 0.2;
   //sound += tempo;
   
-  if (abs(sound) > 1.0) sound /= abs(sound);
+  sound += gate(beatToTime(-bpm) * 2.0);
+  //#float g = mod(bpm, 4.0) > 3.5 ? 8.0:1.25;
+  //#sound += gate(-bpm * g);
+  
+  //if (abs(sound) > 1.0) sound /= abs(sound);
+  
+  sound = sine(440.0 * time);
   
   return vec2(sound);
 }
