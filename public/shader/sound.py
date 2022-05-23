@@ -15,8 +15,10 @@ vec2 mainSound(float time) {
   float bpm = timeToBeat(time);
   
   vec2 sound = vec2(0.0);
+  //float pitch = (mod(bpm, 2.0) >= 1.0 ? 440.0 : 880.0) * sin((bpm));
   
-  float sine440 = sine(440.0 * beatToTime(bpm));
+  float pitch = 440.0 * ;
+  float sine440 = sine(pitch);// * beatToTime(bpm));
   sound.x += sine440;
   
   float metronome = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
