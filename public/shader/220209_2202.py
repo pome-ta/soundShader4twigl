@@ -1,3 +1,4 @@
+// memo: ドローン
 #define BPM 90.0
 
 const float PI = acos(-1.0);

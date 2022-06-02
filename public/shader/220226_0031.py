@@ -1,3 +1,5 @@
+// memo: 8ビートのベースコード乗せ
+
 #define BPM 90.0
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
