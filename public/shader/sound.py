@@ -99,7 +99,7 @@ vec2 mainSound(float time) {
   float tempo = sine((mod(bpm, 4.0) >= 1.0 ? 440.0 : 880.0) * time) * exp(-1e2 * fract(bpm));
   
   float sound = 0.0;
-  sound += bassDrum(bpm) * 0.6;
+  sound += bassDrum(bpm) * 0.65;
   sound += snereDrum(bpm) * 0.5;
   sound += hiHat(bpm) * 0.4;
   sound += strings(bpm) * 0.125;
