@@ -4,7 +4,7 @@ import { barVisualize } from './visualizar.js';
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE_HEADER;
 let FRAGMENT_SHADER_SOURCE_FOOTER;
-const DURATION = 0.1;
+const DURATION = 16;
 const BUFFER_WIDTH = 512;
 const BUFFER_HEIGHT = 512;
 const FFT_SIZE = 128;
@@ -189,7 +189,7 @@ class Sound {
     this.audioBufferSourceNode.start();
     this.isPlay = true;
 
-    //this.dataLeft.textContent = buffer.getChannelData(0);
+    this.dataLeft.textContent = sample;
     //this.dataRight.textContent = buffer.getChannelData(1);
     this.dlData = [];
     for (let i = 0; i < buffer.getChannelData(0).length; ++i) {
