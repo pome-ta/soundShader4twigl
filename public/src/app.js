@@ -5,7 +5,7 @@ import { barVisualize } from './visualizar.js';
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE_HEADER;
 let FRAGMENT_SHADER_SOURCE_FOOTER;
-const DURATION = 32;
+const DURATION = 0.01;
 const BUFFER_WIDTH = 512;
 const BUFFER_HEIGHT = 512;
 const FFT_SIZE = 128;
@@ -74,6 +74,9 @@ class Sound {
     this.vs = this.createShader(VERTEX_SHADER_SOURCE, true);
 
     this.audioCtx = new AudioContext();
+    
+    this.dataLeft = document.querySelector('#l');
+    this.dataRight = document.querySelector('#r');
   }
 
   render(source, draw = false) {
@@ -169,7 +172,31 @@ class Sound {
     this.audioBufferSourceNode.loop = false;
     this.audioBufferSourceNode.start();
     this.isPlay = true;
+    
+    //this.dataLeft.textContent = buffer.getChannelData(0);
+    //this.dataRight.textContent = buffer.getChannelData(1);
+    this.dlData = [];
+    for (let i = 0; i < buffer.getChannelData(0).length; ++i) {
+      this.dlData.push(buffer.getChannelData(0)[i])
+      this.dlData.push(buffer.getChannelData(1)[i])
+    }
+    //console.log(buffer.getChannelData(0).length);
+    this.dlButton = document.querySelector('#dl');
+    //console.log(this.dlData.length);
+    //this.dataLeft.textContent = this.dlData.join('\n');
+    this.dlButton.addEventListener(eventName, this.buttonClick);
   }
+  buttonClick() {
+    console.log(this.dlData.length);
+    const blob = new Blob(this.dlData,{type:'text/plan'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'wavData.txt';
+    link.click();
+    //URL.revokeObjectURL(link.href);
+  }
+  
+  
 
   createShader(source, isVertexShader) {
     const type = isVertexShader === true ? this.gl.VERTEX_SHADER : this.gl.FRAGMENT_SHADER;
