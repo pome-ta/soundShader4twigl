@@ -1,11 +1,10 @@
 import { wavVisualize } from './visualizar.js';
 import { barVisualize } from './visualizar.js';
 
-
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE_HEADER;
 let FRAGMENT_SHADER_SOURCE_FOOTER;
-const DURATION = 0.01;
+const DURATION = 0.1;
 const BUFFER_WIDTH = 512;
 const BUFFER_HEIGHT = 512;
 const FFT_SIZE = 128;
@@ -16,7 +15,6 @@ void main(){
   gl_Position = vec4(p, 1.0);
 }`;
 
-
 // xxx: 改行数から、エラーの行数を正しく表示させたい
 FRAGMENT_SHADER_SOURCE_HEADER = `#version 300 es
 precision highp float;
@@ -24,7 +22,6 @@ uniform float blockOffset;
 uniform float sampleRate;
 
 out vec4 outColor;`;
-
 
 FRAGMENT_SHADER_SOURCE_FOOTER = `
 void main(){
@@ -35,7 +32,6 @@ void main(){
   vec2 XH = floor(XV / 256.0) / 255.0;
   outColor = vec4(XL.x, XH.x, XL.y, XH.y);
 }`;
-
 
 class Sound {
   constructor() {
@@ -60,10 +56,10 @@ class Sound {
 
   init() {
     this.canvas = document.createElement('canvas');
-    
+
     this.waveCanvas = document.querySelector('#waveVisualizer');
     this.barCanvas = document.querySelector('#barVisualizer');
-    
+
     const wrap = document.querySelector('#wrap');
     wrap.appendChild(this.canvas);
 
@@ -74,7 +70,7 @@ class Sound {
     this.vs = this.createShader(VERTEX_SHADER_SOURCE, true);
 
     this.audioCtx = new AudioContext();
-    
+
     this.dataLeft = document.querySelector('#l');
     this.dataRight = document.querySelector('#r');
   }
@@ -96,7 +92,9 @@ class Sound {
       return;
     }
 
-    if (draw !== true) { return; }
+    if (draw !== true) {
+      return;
+    }
     if (this.program != null) {
       this.gl.deleteProgram(this.program);
     }
@@ -110,14 +108,22 @@ class Sound {
     };
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.gl.createBuffer());
-    this.gl.bufferData(this.gl.ARRAY_BUFFER,
-      new Float32Array(
-        [-1.0,  1.0,  0.0, -1.0,
-         -1.0,  0.0,  1.0,  1.0,
-          0.0,  1.0, -1.0,  0.0]),
-      this.gl.STATIC_DRAW);
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array([
+        -1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, 0.0, 1.0, -1.0, 0.0,
+      ]),
+      this.gl.STATIC_DRAW
+    );
     this.gl.enableVertexAttribArray(this.attLocation);
-    this.gl.vertexAttribPointer(this.attLocation, 3, this.gl.FLOAT, false, 0, 0);
+    this.gl.vertexAttribPointer(
+      this.attLocation,
+      3,
+      this.gl.FLOAT,
+      false,
+      0,
+      0
+    );
 
     this.gl.disable(this.gl.DEPTH_TEST);
     this.gl.disable(this.gl.CULL_FACE);
@@ -141,12 +147,22 @@ class Sound {
     this.gl.uniform1f(this.uniLocation.sampleRate, sample);
     const block = Math.ceil((sample * DURATION) / range);
     for (let i = 0, j = block; i < j; ++i) {
-      this.gl.uniform1f(this.uniLocation.blockOffset, i * range / sample);
+      this.gl.uniform1f(this.uniLocation.blockOffset, (i * range) / sample);
       this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-      this.gl.readPixels(0, 0, BUFFER_WIDTH, BUFFER_HEIGHT, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pixel);
+      this.gl.readPixels(
+        0,
+        0,
+        BUFFER_WIDTH,
+        BUFFER_HEIGHT,
+        this.gl.RGBA,
+        this.gl.UNSIGNED_BYTE,
+        pixel
+      );
       for (let k = 0, l = range; k < l; ++k) {
-        channelDataLeft[i * range + k] = (pixel[k * 4 + 0] + 256 * pixel[k * 4 + 1]) / 65535 * 2 - 1;
-        channelDataRight[i * range + k] = (pixel[k * 4 + 2] + 256 * pixel[k * 4 + 3]) / 65535 * 2 - 1;
+        channelDataLeft[i * range + k] =
+          ((pixel[k * 4 + 0] + 256 * pixel[k * 4 + 1]) / 65535) * 2 - 1;
+        channelDataRight[i * range + k] =
+          ((pixel[k * 4 + 2] + 256 * pixel[k * 4 + 3]) / 65535) * 2 - 1;
       }
     }
 
@@ -163,7 +179,7 @@ class Sound {
 
     this.audioAnalyserNode.minDecibels = -90;
     this.audioAnalyserNode.maxDecibels = -10;
-    
+
     wavVisualize(this.waveCanvas, this.audioAnalyserNode);
     barVisualize(this.barCanvas, this.audioAnalyserNode);
     this.audioBufferSourceNode.connect(this.audioAnalyserNode);
@@ -172,34 +188,24 @@ class Sound {
     this.audioBufferSourceNode.loop = false;
     this.audioBufferSourceNode.start();
     this.isPlay = true;
-    
+
     //this.dataLeft.textContent = buffer.getChannelData(0);
     //this.dataRight.textContent = buffer.getChannelData(1);
     this.dlData = [];
     for (let i = 0; i < buffer.getChannelData(0).length; ++i) {
-      this.dlData.push(buffer.getChannelData(0)[i])
-      this.dlData.push(buffer.getChannelData(1)[i])
+      this.dlData.push(`${buffer.getChannelData(0)[i]}${'\n'}`);
+      this.dlData.push(`${buffer.getChannelData(1)[i]}${'\n'}`);
     }
     //console.log(buffer.getChannelData(0).length);
-    this.dlButton = document.querySelector('#dl');
+    //this.dlButton = document.querySelector('#dl');
     //console.log(this.dlData.length);
     //this.dataLeft.textContent = this.dlData.join('\n');
-    this.dlButton.addEventListener(eventName, this.buttonClick);
+    //this.dlButton.addEventListener(eventName, this.buttonClick);
   }
-  buttonClick() {
-    console.log(this.dlData.length);
-    const blob = new Blob(this.dlData,{type:'text/plan'});
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'wavData.txt';
-    link.click();
-    //URL.revokeObjectURL(link.href);
-  }
-  
-  
 
   createShader(source, isVertexShader) {
-    const type = isVertexShader === true ? this.gl.VERTEX_SHADER : this.gl.FRAGMENT_SHADER;
+    const type =
+      isVertexShader === true ? this.gl.VERTEX_SHADER : this.gl.FRAGMENT_SHADER;
     const shader = this.gl.createShader(type);
     this.gl.shaderSource(shader, source);
     this.gl.compileShader(shader);
@@ -214,12 +220,13 @@ class Sound {
   }
 }
 
-
-
 console.log('start');
 let mySound = null;
 
-const soundShader_path = new URL(`shader/sound.py`, location.protocol + '//' + location.host + location.pathname).href
+const soundShader_path = new URL(
+  `shader/sound.py`,
+  location.protocol + '//' + location.host + location.pathname
+).href;
 
 fetch(soundShader_path)
   .then((res) => res.text())
@@ -229,8 +236,8 @@ fetch(soundShader_path)
     //document.addEventListener(eventName, initAudioContext);
   });
 
-
-const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
+const eventName =
+  typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
 document.addEventListener(eventName, initAudioContext);
 
 function initAudioContext() {
@@ -239,4 +246,17 @@ function initAudioContext() {
   mySound.audioCtx.resume();
 }
 
+function buttonClick() {
+  console.log(mySound.dlData.length);
+  const blob = new Blob(mySound.dlData, { type: 'text/plan' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'wavData.txt';
+  link.click();
+  //URL.revokeObjectURL(link.href);
+}
 
+const dlButton = document.querySelector('#dl');
+//console.log(this.dlData.length);
+//this.dataLeft.textContent = this.dlData.join('\n');
+dlButton.addEventListener(eventName, buttonClick);

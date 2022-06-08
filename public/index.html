@@ -1,37 +1,37 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"
+    />
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-    content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="module">
+      // import eruda from 'https://cdn.skypack.dev/eruda';
+      import eruda from './src/modules/eruda.js';
+      eruda.init();
+      console.log('eruda run');
+    </script>
 
-  <script type="module">
-    // import eruda from 'https://cdn.skypack.dev/eruda';
-    import eruda from './src/modules/eruda.js';
-    eruda.init();
-    console.log('eruda run');
-  </script>
+    <script type="module" src="./src/app.js"></script>
+    <link rel="stylesheet" href="./css/style.css" />
 
-  <script type="module" src="./src/app.js"></script>
-  <link rel="stylesheet" href="./css/style.css">
+    <title>app</title>
+  </head>
 
-  <title>app</title>
-</head>
+  <body>
+    <div id="wrap">
+      <canvas id="waveVisualizer" width="0" height="0"></canvas>
+      <canvas id="barVisualizer" width="0" height="0"></canvas>
 
-<body>
-  <div id="wrap">
-    <canvas id="waveVisualizer" width="0" height="0"></canvas>
-    <canvas id="barVisualizer" width="0" height="0"></canvas>
-    
-    <input type="button" id="dl" value="ファイル出力">
-    
-    <div id="l" class="t"></div>
-    <br>
-    <div id="r" class="t"></div>
-    
-  </div>
-<!--
+      <input type="button" id="dl" value="ファイル出力" />
+
+      <div id="l" class="t"></div>
+      <br />
+      <div id="r" class="t"></div>
+    </div>
+    <!--
     <div id="menu-area">
       <span class="video_play"></span>
       <span class="video_pause"></span>
@@ -39,7 +39,5 @@
     </div>
     <textarea id="codearea"></textarea>
 -->
-
-</body>
-
+  </body>
 </html>
