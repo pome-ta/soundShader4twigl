@@ -37,7 +37,8 @@ vec2 mainSound(float time) {
   float tKick = mod( beat, 1.0 ) * BEAT2TIME;
   dest += 0.5 * kick( tKick );
   
-  return clip( dest );
+  //return clip( dest );
+  return dest;
 }
 
 
