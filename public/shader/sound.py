@@ -38,21 +38,31 @@ vec2 kick( float t ) {
 
 vec2 hihat( float t, float d ) {
   float decay = exp( -d * t );
-  vec2 sig = vec2(1.0 - 2.0 * rand(vec2(t), 0.0));
-  sig -= vec2(1.0 - 2.0 * rand(vec2(t - 0.007), 0.0)); // pseudo high pass. shoutouts to aaaidan
+  vec2 sig = vec2(1.0 - 2.0 * rand(vec2(t)));
+  sig -= vec2(1.0 - 2.0 * rand(vec2(t + 0.007))); // pseudo high pass. shoutouts to aaaidan
   return sig * decay;
 }
 
+
 vec2 mainSound(float time) {
-  
   float beat = time * TIME2BEAT;
   vec2 dest = vec2( 0.0 );
     
   float tKick = mod( beat, 1.0 ) * BEAT2TIME;
   dest += 0.5 * kick( tKick );
   
-  //return clip( dest );
-  return dest;
+  float tHihat = mod( beat, 0.25 ) * BEAT2TIME;
+  float stepHihat = mod( floor( beat * 4.0 ), 16.0 );
+  float velHihat = fract( FRACT_STEP_VELOCITY_A * stepHihat + FRACT_STEP_VELOCITY_B ); // fract step velocity here
+  float decayHihat = pow( 2.0, 8.0 - 3.0 * velHihat );
+  float ampHihat = mix( 0.7, 1.0, velHihat );
+  dest += 0.2 * ampHihat * hihat( tHihat, decayHihat  );
+
+  
+  
+  
+  return clip( dest );
+  //return dest;
 }
 
 
