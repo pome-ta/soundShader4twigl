@@ -1,5 +1,5 @@
-// memo: https://www.shadertoy.com/view/NsVcDR
-// kick
+// [20220609_fract step velocity](https://www.shadertoy.com/view/NsVcDR)
+
 
 #define saturate(i) clamp(i,0.,1.)
 #define clip(i) clamp(i,-1.,1.)
@@ -13,13 +13,21 @@ const float FRACT_STEP_VELOCITY_A = 0.62;
 const float FRACT_STEP_VELOCITY_B = 0.67;
 
 // constants
-const float PI = acos( -1.0 );
+const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
-const float SQRT2 = sqrt( 2.0 );
+const float SQRT2 = sqrt(2.0);
 
 const float BPS = BPM / 60.0;
 const float TIME2BEAT = BPS;
 const float BEAT2TIME = 1.0 / BPS;
+
+
+float rand(vec2 st) {
+  vec2 magic2 = vec2(12.9898, 78.233);
+  float _rnd = sin(dot(st, magic2));
+  return fract(_rnd * 43758.5453123);
+}
+
 
 
 vec2 kick( float t ) {
@@ -28,10 +36,16 @@ vec2 kick( float t ) {
   return vec2( decay * sin( TAU * phase ) );
 }
 
+vec2 hihat( float t, float d ) {
+  float decay = exp( -d * t );
+  vec2 sig = vec2(1.0 - 2.0 * rand(vec2(t), 0.0));
+  sig -= vec2(1.0 - 2.0 * rand(vec2(t - 0.007), 0.0)); // pseudo high pass. shoutouts to aaaidan
+  return sig * decay;
+}
+
 vec2 mainSound(float time) {
   
   float beat = time * TIME2BEAT;
-    
   vec2 dest = vec2( 0.0 );
     
   float tKick = mod( beat, 1.0 ) * BEAT2TIME;
