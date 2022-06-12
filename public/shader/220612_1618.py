@@ -12,7 +12,7 @@ const float FRACT_STEP_VELOCITY_B = 0.67;
 // constants
 const float PI = acos(-1.0);
 const float TAU = PI * 2.0;
-//const float SQRT2 = sqrt(2.0);
+const float SQRT2 = sqrt(2.0);
 
 const float BPS = BPM / 60.0;
 const float TIME2BEAT = BPS;
@@ -28,18 +28,18 @@ float rand(vec2 st) {
 
 
 vec2 kick( float t ) {
-  float phase = 20.0 * t - 6.0 * exp(-40.0 * t) - 3.0 * exp(-400.0 * t);
+  float phase = 45.0 * t - 6.0 * exp(-40.0 * t) - 3.0 * exp(-400.0 * t);
   float decay = exp(-3.0 * t);
   return vec2(decay * sin(TAU * phase));
 }
 
 vec2 hihat( float t, float d ) {
   float decay = exp(-d * t);
-  vec2 sig = vec2(1.0 - 2.0 * rand(vec2(t)));
-  //vec2 sig = vec2(1.0 - 2.0 * rand(vec2(140.0, 136.0) * t));
+  //vec2 sig = vec2(1.0 - 2.0 * rand(vec2(t)));
+  vec2 sig = vec2(1.0 - 2.0 * rand(vec2(140.0, 136.0) * t));
   // pseudo high pass. shoutouts to aaaidan
-  sig -= vec2(1.0 - 2.0 * rand(vec2(t + 0.007)));
-  //sig -= vec2(1.0 - 2.0 * rand(vec2(140.0, 136.0) * t + 0.007));
+  //sig -= vec2(1.0 - 2.0 * rand(vec2(t + 0.1)));
+  sig -= vec2(1.0 - 2.0 * rand(vec2(140.0, 136.0) * t + 0.007));
   return sig * decay;
 }
 
