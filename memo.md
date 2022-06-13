@@ -14,8 +14,8 @@
 
 - 音楽の操作ボタン
   - 再生とストップボタンなど
-  - 3分を超える演奏にも、対応できるように
-- shaderコードのビュー
+  - 3 分を超える演奏にも、対応できるように
+- shader コードのビュー
   - 鳴っているコードが表示できるように
   - シンタックスハイライトと入力補完は置いておいて、`textarea` で実装
 
@@ -28,7 +28,7 @@
 
 シーケンス的にするか、モジュール的にするか
 
-3分の壁をどう表現さすか
+3 分の壁をどう表現さすか
 
 # 📝 2022/02/03
 
@@ -48,7 +48,7 @@ for (let i = 0; i < bufferLength; i++) {
   i === 0 ? vcctx.moveTo(x, y) : vcctx.lineTo(x, y);
   x += sliceWidth;
 }
- 
+
 ```
 
 とりあえず、`255` で逆にしてる。。。
@@ -61,7 +61,7 @@ EQ とか、シンセそのものとか
 
 どっちを勉強するか。。。。
 
-あと、3分制限問題はどうしようかな。。。。
+あと、3 分制限問題はどうしようかな。。。。
 
 ### 関数
 
@@ -109,7 +109,7 @@ EQ とか、シンセそのものとか
 
 ## 音の作り方おべんきよ
 
-[GLSLで音を作る | らくとあいすの備忘録](https://raku-phys.hatenablog.com/entry/2020/04/19/002400)
+[GLSL で音を作る | らくとあいすの備忘録](https://raku-phys.hatenablog.com/entry/2020/04/19/002400)
 
 ### 円周率
 
@@ -121,7 +121,7 @@ EQ とか、シンセそのものとか
 
 ### 和音
 
-``` .glsl
+```.glsl
 vec2 mainSound(float time) {
   float pi = acos(-1.0);
   float pi2 = pi * 2.0;
@@ -140,13 +140,13 @@ vec2 mainSound(float time) {
 
 ### エンベロープ
 
-``` .glsl
+```.glsl
 vec2 mainSound(float time) {
   float pi = acos(-1.0);
   float pi2 = pi * 2.0;
   float envelope = 4.0;
   float sine_wave = sin(pi2 * 440.0 * time);
-  
+
   return vec2(sine_wave * fract(envelope * time));
 }
 
@@ -162,21 +162,21 @@ BPM で`1.0` が`60` か？
 
 todo:
 
-> powerで形を変形したfract、三項演算子で条件分岐したものなど様々なエンベロープを考えることが出来ます。
+> power で形を変形した fract、三項演算子で条件分岐したものなど様々なエンベロープを考えることが出来ます。
 
 ### ノイズ
 
-``` .glsl
+```.glsl
 vec2 mainSound(float time) {
   return vec2(fract(sin(time * 1e3) * 1e6) - 0.5);
 }
 
 ```
 
-``` .glsl
+```.glsl
 vec2 mainSound(float time) {
   float noise = fract(sin(time * 1e3) * 1e6) - 0.5;
-  
+
   return vec2(noise * fract(-time * 8.0));
 }
 
@@ -186,7 +186,7 @@ vec2 mainSound(float time) {
 
 #### 組み合わせ
 
-``` .glsl
+```.glsl
 vec2 mainSound(float time) {
   return vec2((fract(sin(time * 1e3) * 1e6) - 0.5) * pow(fract(-time * 4.0), mod(time * 4.0, 2.0) * 8.0));
 }
@@ -201,7 +201,7 @@ todo:
 
 ### 結果から
 
-``` .py
+```.py
 def refresh_webview(self):
     self.wv.clear_cache()
     self.wv.reload()
@@ -217,7 +217,7 @@ def refresh_webview(self):
 
 `SFSafariViewController` にて、local server を立てるのは、console にログを吐くので却下
 
-ログが出てしまうと、強制的にview が変遷してしまい、更新のめんどくささがあった
+ログが出てしまうと、強制的に view が変遷してしまい、更新のめんどくささがあった
 
 #### `WKWebView` を作り直す
 
@@ -225,7 +225,7 @@ def refresh_webview(self):
 
 ## インタラクティブな操作
 
-view をメインで出してしまうと、ソースコード更新の度にview を閉じる必要があったため`panel` にて出すことにした
+view をメインで出してしまうと、ソースコード更新の度に view を閉じる必要があったため`panel` にて出すことにした
 
 #### テストリポジトリ
 
@@ -237,7 +237,7 @@ view をメインで出してしまうと、ソースコード更新の度にvie
 
 しかし、view からはみ出して、横スクロールが面倒なので
 
-``` .css
+```.css
 canvas {
   width: 100%;
 }
@@ -253,9 +253,9 @@ canvas {
 
 # 📝 2022/01/17
 
-連続でjs 読んじゃうから、delegate でクラッシュさせてる😇
+連続で js 読んじゃうから、delegate でクラッシュさせてる 😇
 
-[GLSLで音を作る | らくとあいすの備忘録](https://raku-phys.hatenablog.com/entry/2020/04/19/002400)
+[GLSL で音を作る | らくとあいすの備忘録](https://raku-phys.hatenablog.com/entry/2020/04/19/002400)
 
 # 📝 2022/01/16
 
@@ -269,7 +269,7 @@ class 化してみる
 
 # 📝 2022/01/13
 
-音は出るようになったけど、Pythonista でview を消しても、音が残る時がある
+音は出るようになったけど、Pythonista で view を消しても、音が残る時がある
 
 # 📝 2022/01/12
 
