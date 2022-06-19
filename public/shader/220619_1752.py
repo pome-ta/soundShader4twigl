@@ -1,4 +1,4 @@
-// memo: 8ビートのベースコード乗せ
+// memo: 8ビートのベースコード乗せ base wave
 
 #define BPM 90.0
 const float PI = acos(-1.0);
@@ -110,6 +110,4 @@ vec2 mainSound(float time) {
   
   return vec2(sound);
 }
-
-
 
