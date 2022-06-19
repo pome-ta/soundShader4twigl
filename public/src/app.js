@@ -4,7 +4,7 @@ import { barVisualize } from './visualizar.js';
 let VERTEX_SHADER_SOURCE;
 let FRAGMENT_SHADER_SOURCE_HEADER;
 let FRAGMENT_SHADER_SOURCE_FOOTER;
-const DURATION = 16;
+const DURATION = 1;
 const BUFFER_WIDTH = 512;
 const BUFFER_HEIGHT = 512;
 const FFT_SIZE = 128;
