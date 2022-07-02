@@ -227,7 +227,7 @@ def refresh_webview(self):
 
 view をメインで出してしまうと、ソースコード更新の度に view を閉じる必要があったため`panel` にて出すことにした
 
-#### テストリポジトリ
+### テストリポジトリ
 
 [draftPythonistaScripts](https://github.com/pome-ta/draftPythonistaScripts) に突っ込んでる
 
@@ -283,12 +283,12 @@ class 化してみる
 
 サイズ取得(描画) が少し変？
 
-```
+``` .txt
 LOG: 398
 LOG: 302
 ```
 
-```
+``` .log
 398
 226
 ```
