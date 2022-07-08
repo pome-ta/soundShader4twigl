@@ -37,13 +37,17 @@ float snereDrum(float beat) {
 }
 
 
+float pitch(float p) {
+  return pow(2.0, p / 12.0) * 440.0;
+}
+
 vec2 mainSound(float time) {
   float bpm = timeToBeat(time);
   
   
   float sound = 0.0;
-  sound += bassDrum(bpm) * 0.65;
-  sound += snereDrum(bpm) * 0.8;
+  //sound += bassDrum(bpm) * 0.65;
+  //sound += snereDrum(bpm) * 0.8;
   
   if (abs(sound) > 1.0) sound /= abs(sound);
   
