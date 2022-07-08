@@ -224,7 +224,7 @@ console.log('start');
 let mySound = null;
 
 const soundShader_path = new URL(
-  `shader/sound.glsl`,
+  `shader/sound.py`,
   location.protocol + '//' + location.host + location.pathname
 ).href;
 

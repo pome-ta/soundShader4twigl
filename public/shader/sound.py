@@ -1,4 +1,4 @@
-// memo: ワンショット
+// memo: note
 
 #define BPM 60.0
 const float PI = acos(-1.0);
@@ -12,45 +12,49 @@ float sine(float phase) {
   return sin(TAU * phase);
 }
 
-
-float rand(vec2 st) {
-  vec2 magic2 = vec2(12.9898, 78.233);
-  float _rnd = sin(dot(st, magic2));
-  return fract(_rnd * 43758.5453123);
-}
-
 float calcHertz(float scale) {
-  return 440.0 * pow(2.0, scale / 12.0);
+  return 220.0 * pow(2.0, scale / 12.0);
 }
 
-float bassDrum(float beat) {
-  float t = mod(beat / 2.0, 1.0);// 3.0 * 8.0;
-  float bd = sin(beatToTime(beat) * calcHertz(-4.0));
-  return bd * max(0.0, 1.0 - fract(t) * 8.0);
-}
-
-
-float snereDrum(float beat) {
-  float t = mod(beat / 2.0, 4.0) / 4.0 * 8.0;
-  float sd = rand(vec2(beatToTime(beat) * 64.0, 0.0));
-  return sd * max(0.0, 1.0 - t * 8.0);
-}
-
-
-float pitch(float p) {
-  return pow(2.0, p / 12.0) * 440.0;
+float triangle(float phase) {
+  return 1.0 - 4.0 * abs(fract(phase) - 0.5);
 }
 
 vec2 mainSound(float time) {
   float bpm = timeToBeat(time);
+
+  float note;
+  // C4
+  note = 3.0;
   
+  // D4
+  note = 5.0;
   
-  float sound = 0.0;
-  //sound += bassDrum(bpm) * 0.65;
-  //sound += snereDrum(bpm) * 0.8;
+  // E4
+  note = 7.0;
   
-  if (abs(sound) > 1.0) sound /= abs(sound);
+  // F4
+  note = 8.0;
   
+  // G4
+  note = 10.0;
+  
+  // A4
+  note = 12.0;
+  
+  // B4
+  note = 14.0;
+  
+  // C5
+  note = 15.0;
+
+
+  float freq = calcHertz(note);
+  
+  float fm = 0.07 * sine(time * freq * 7.0);
+  float vib = fm * sine(time * 4.0);
+
+  float sound = triangle(time * freq + vib) * exp(-time * 0.5) * fract(-time / 4.0);
+
   return vec2(sound);
 }
-
