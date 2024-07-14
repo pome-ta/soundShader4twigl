@@ -42,6 +42,7 @@ NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
 UIColor = ObjCClass('UIColor')
 NSURL = ObjCClass('NSURL')
 NSURLRequest = ObjCClass('NSURLRequest')
+NSDate = ObjCClass('NSDate')
 
 # --- WKWebView
 WKWebView = ObjCClass('WKWebView')
@@ -88,6 +89,7 @@ class WebViewController:
         this, sel('refreshWebView:'), valueChanged)
 
       self.webView.scrollView().refreshControl = refreshControl
+      
       this.view = self.webView
 
     def viewDidLoad(_self, _cmd):
@@ -97,25 +99,18 @@ class WebViewController:
       #view.backgroundColor = UIColor.systemDarkRedColor()
       navigationItem = this.navigationItem()
       navigationItem.title = self.nav_title
+      self.refresh_load()
+    
+    def viewWillDisappear_(_self, _cmd, _animated):
+      pass
+      
 
-      # --- load url
-      if (Path(self.targetURL).exists()):
-        target_path = Path(self.targetURL)
-        fileURLWithPath = NSURL.fileURLWithPath_isDirectory_
-        folder_path = fileURLWithPath(str(target_path.parent), True)
-        index_path = fileURLWithPath(str(target_path), False)
-        self.webView.loadFileURL_allowingReadAccessToURL_(
-          index_path, folder_path)
-      else:
-        url = NSURL.URLWithString_(self.targetURL)
-        reloadIgnoringLocalCacheData = 1
-        timeoutInterval = 10
-        request = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
-          url, reloadIgnoringLocalCacheData, timeoutInterval)
-        self.webView.loadRequest_(request)
+    def viewDidDisappear_(_self, _cmd, _animated):
+      self.refresh_load()
 
     def refreshWebView_(_self, _cmd, _sender):
       sender = ObjCInstance(_sender)
+      self.refresh_load()
       self.webView.reload()
       sender.endRefreshing()
 
@@ -131,6 +126,8 @@ class WebViewController:
     _methods = [
       loadView,
       viewDidLoad,
+      viewWillDisappear_,
+      viewDidDisappear_,
       refreshWebView_,
       webView_didFinishNavigation_,
     ]
@@ -147,6 +144,41 @@ class WebViewController:
     }
     _vc = create_objc_class(**create_kwargs)
     self._viewController = _vc
+
+  def refresh_load(self):
+    # todo: 強制的に再度読み込み
+    if (Path(self.targetURL).exists()):
+      target_path = Path(self.targetURL)
+      fileURLWithPath = NSURL.fileURLWithPath_isDirectory_
+      folder_path = fileURLWithPath(str(target_path.parent), True)
+      index_path = fileURLWithPath(str(target_path), False)
+      self.webView.loadFileURL_allowingReadAccessToURL_(
+        index_path, folder_path)
+    else:
+      url = NSURL.URLWithString_(self.targetURL)
+      reloadIgnoringLocalCacheData = 1
+      timeoutInterval = 10
+      request = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
+        url, reloadIgnoringLocalCacheData, timeoutInterval)
+      self.webView.loadRequest_(request)
+  
+  '''
+  def clear_cache(self):
+    store = WKWebsiteDataStore.defaultDataStore()
+    data_types = WKWebsiteDataStore.allWebsiteDataTypes()
+    from_start = NSDate.dateWithTimeIntervalSince1970_(0)
+
+    def dummy_completion_handler():
+      pass
+
+    compare_block = ObjCBlock(dummy_completion_handler,
+                              restype=ctypes.c_void_p,
+                              argtypes=[])
+
+    store.removeDataOfTypes_modifiedSince_completionHandler_(
+      data_types, from_start, compare_block)
+  '''
+
 
   @on_main_thread
   def _init(self):
@@ -264,7 +296,7 @@ def present_objc(vc):
 
   while root_vc.presentedViewController():
     root_vc = root_vc.presentedViewController()
-  vc.setModalPresentationStyle(1)
+  vc.setModalPresentationStyle(0)
   root_vc.presentViewController_animated_completion_(vc, True, None)
 
 
@@ -274,5 +306,4 @@ if __name__ == '__main__':
   m_vc = WebViewController.load_url(url)
   n_vc = NavigationController.new(m_vc)
   present_objc(n_vc)
-
 
