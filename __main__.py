@@ -89,7 +89,7 @@ class WebViewController:
         this, sel('refreshWebView:'), valueChanged)
 
       self.webView.scrollView().refreshControl = refreshControl
-      
+
       this.view = self.webView
 
     def viewDidLoad(_self, _cmd):
@@ -100,17 +100,15 @@ class WebViewController:
       navigationItem = this.navigationItem()
       navigationItem.title = self.nav_title
       self.refresh_load()
-    
+
     def viewWillDisappear_(_self, _cmd, _animated):
       pass
-      
 
     def viewDidDisappear_(_self, _cmd, _animated):
       self.refresh_load()
 
     def refreshWebView_(_self, _cmd, _sender):
       sender = ObjCInstance(_sender)
-      self.refresh_load()
       self.webView.reload()
       sender.endRefreshing()
 
@@ -161,24 +159,6 @@ class WebViewController:
       request = NSURLRequest.requestWithURL_cachePolicy_timeoutInterval_(
         url, reloadIgnoringLocalCacheData, timeoutInterval)
       self.webView.loadRequest_(request)
-  
-  '''
-  def clear_cache(self):
-    store = WKWebsiteDataStore.defaultDataStore()
-    data_types = WKWebsiteDataStore.allWebsiteDataTypes()
-    from_start = NSDate.dateWithTimeIntervalSince1970_(0)
-
-    def dummy_completion_handler():
-      pass
-
-    compare_block = ObjCBlock(dummy_completion_handler,
-                              restype=ctypes.c_void_p,
-                              argtypes=[])
-
-    store.removeDataOfTypes_modifiedSince_completionHandler_(
-      data_types, from_start, compare_block)
-  '''
-
 
   @on_main_thread
   def _init(self):
