@@ -281,7 +281,6 @@ def present_objc(vc):
 
 
 if __name__ == '__main__':
-  #m_vc = WebViewController.new()
   url = Path('./public/index.html')
   m_vc = WebViewController.load_url(url)
   n_vc = NavigationController.new(m_vc)
